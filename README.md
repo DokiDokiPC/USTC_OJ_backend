@@ -1,2 +1,8 @@
 # USTC_OJ_backend
-USTC Online Judge backend
+
+### 使用
+
+```bash
+pip install -e .
+flask --app backend run
+```
