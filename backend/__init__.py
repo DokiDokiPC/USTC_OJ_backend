@@ -1,10 +1,14 @@
 from flask import Flask
+from flask_cors import CORS
 app = Flask(__name__)
 
-from backend.config import Config, getc
-from backend.models import db, User
+# enable CORS
+CORS(app, resources={r'/*': {'origins': '*'}})
+
+
+from backend.config import Config
+from backend.db import db
 from backend.admin import admin
-import backend.views
 
 # 配置应用
 app.config.from_object(Config)
@@ -16,3 +20,7 @@ with app.app_context():
 
 # 注册admin
 admin.init_app(app)
+
+# 蓝图problem
+from backend.problem import problem
+app.register_blueprint(problem.bp)

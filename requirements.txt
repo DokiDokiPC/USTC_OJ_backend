@@ -6,3 +6,4 @@ PyJWT==2.4.0
 SQLAlchemy==1.4.40
 WTForms==3.0.1
 email-validator
+SQLAlchemy-Utils==0.38.2

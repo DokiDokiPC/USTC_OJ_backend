@@ -11,6 +11,7 @@ setup(
         'Flask_WTF',
         'PyJWT',
         'SQLAlchemy',
+        'SQLAlchemy-Utils'
         'WTForms',
         'email-validator'
     ]
