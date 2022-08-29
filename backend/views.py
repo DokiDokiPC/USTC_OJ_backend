@@ -39,9 +39,9 @@ def register():
     form = RegisterForm()
     if form.validate_on_submit():
         if User.query.filter_by(username=form.username.data).first():
-            render_template('register.html', form=form, err_msg=f'用户{form.username.data}已存在'), HTTPStatus.CONFLICT
+            return render_template('register.html', form=form, err_msg=f'用户{form.username.data}已存在'), HTTPStatus.CONFLICT
         if User.query.filter_by(email=form.email.data).first():
-            render_template('register.html', form=form, err_msg=f'邮箱{form.email.data}已存在'), HTTPStatus.CONFLICT
+            return render_template('register.html', form=form, err_msg=f'邮箱{form.email.data}已存在'), HTTPStatus.CONFLICT
         new_user = User(username=form.username.data, password=form.password.data,
                         email=form.email.data, nickname=form.nickname.data)
         try:

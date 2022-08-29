@@ -11,6 +11,8 @@ app.config.from_object(Config)
 
 # 注册数据库
 db.init_app(app)
+with app.app_context():
+    db.create_all()
 
 # 注册admin
 admin.init_app(app)
