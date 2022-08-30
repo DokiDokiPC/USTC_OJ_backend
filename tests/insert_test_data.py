@@ -38,4 +38,31 @@ def add_data():
                    Level='Easy', ac_num=2, submit_num=10))
     db.session.add(Problem(ID=1018, Title='A+B问题@018',
                    Level='Easy', ac_num=2, submit_num=10))
+
+    db.session.add(User(username='Nyan_the_cat',
+                   password='123456', email='aaa@aaa.com'))
+    db.session.commit()
+
+    db.session.add(Status(
+        **{
+            'submitTime': "2022-3-1",
+            'problemId': "1001",
+            'coder': "Nyan_the_cat",
+            'status': "Accepted",
+            'timeCost': "10",
+            'memoryCost': "30"
+        }
+    ))
+
+    db.session.add(Status(
+        **{
+            'submitTime': "2022-3-1",
+            'problemId': "1002",
+            'coder': "Nyan_the_cat",
+            'status': "Compile Error",
+            'timeCost': None,
+            'memoryCost': None
+        }
+    ))
+
     db.session.commit()

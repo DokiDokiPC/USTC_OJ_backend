@@ -1,9 +1,14 @@
 from flask import Flask
 
 from backend.config import Config
+<<<<<<< HEAD
 from backend.extensions import db, admin, jwt, docs, cors
 from backend.blueprints import user_bp, token_bp, problem_bp
+=======
+from backend.db import db
+from backend.admin import admin
 from backend.blueprints import blueprints
+>>>>>>> 62c934fb03e56b5b2c4d604e5c6db44ebd8f9293
 
 
 def create_app():
@@ -18,9 +23,11 @@ def create_app():
     docs.init_app(app)
     cors.init_app(app)
     # 注册蓝图
+<<<<<<< HEAD
     app.register_blueprint(user_bp)
     app.register_blueprint(token_bp)
     app.register_blueprint(problem_bp)
+=======
     for bp in blueprints:
         app.register_blueprint(bp)
 
@@ -35,5 +42,6 @@ def create_app():
         version="1.0.0",
         description="Online Judge",
     )
+>>>>>>> 62c934fb03e56b5b2c4d604e5c6db44ebd8f9293
     # 返回app
     return app
