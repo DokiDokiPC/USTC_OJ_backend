@@ -4,7 +4,7 @@ from flask_cors import CORS
 from backend.config import Config
 from backend.db import db
 from backend.admin import admin
-from backend.blueprints import user_bp, token_bp, problem_bp
+from backend.blueprints import blueprints
 
 from flask_docs import ApiDoc
 
@@ -19,12 +19,14 @@ def create_app():
     admin.init_app(app)
     CORS(app, resources={r'/*': {'origins': '*'}})
     # 注册蓝图
-    app.register_blueprint(user_bp)
-    app.register_blueprint(token_bp)
-    app.register_blueprint(problem_bp)
-    
-    
+    for bp in blueprints:
+        app.register_blueprint(bp)
+
+    # 自动生成文档
     app.config["API_DOC_MEMBER"] = ["problem"]
+    app.config["API_DOC_MEMBER"] += ["user"]
+    app.config["API_DOC_MEMBER"] += ["token"]
+    app.config["API_DOC_MEMBER"] += ["status"]
     ApiDoc(
         app,
         title="USTCOJ",

@@ -16,15 +16,12 @@ class Problem(db.Model):
 
 @dataclass
 class User(db.Model):
-    ID: int = db.Column(db.Integer, primary_key=True)
     username: str = db.Column(db.String(get_config(
-        'USERNAME_MAX_LEN')), nullable=False, unique=True)
+        'USERNAME_MAX_LEN')), nullable=False, unique=True, primary_key=True)
     password: str = db.Column(
         db.String(get_config('PWD_MAX_LEN')), nullable=False)
     email: str = db.Column(db.String(get_config(
         'EMAIL_MAX_LEN')), nullable=False, unique=True)
-    nickname: str = db.Column(
-        db.String(get_config('NICKNAME_MAX_LEN')), nullable=False)
 
 
 @dataclass
@@ -36,5 +33,7 @@ class Status(db.Model):
     coder: str = db.Column(db.String(80), db.ForeignKey(
         'user.username'), nullable=False)
     status: str = db.Column(db.String(20), nullable=False)
-    timeCost: int = db.Column(db.Integer, nullable=False)
-    memoryCost: int = db.Column(db.Integer, nullable=False)
+    # timeCost ms
+    timeCost: int = db.Column(db.Integer)
+    # memoryCost Kb
+    memoryCost: int = db.Column(db.Integer)
