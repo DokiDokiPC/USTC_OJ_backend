@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 import toml
 
 
@@ -12,15 +14,18 @@ def get_SQLALCHEMY_DATABASE_URI():
 
 
 class BaseConfig(object):
+    # flask密钥
     SECRET_KEY = 'secret'
+    
+    # sqlalchemy配置
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_DATABASE_URI = get_SQLALCHEMY_DATABASE_URI()
 
-    # jwt配置
-    JWT_SECRET = 'secret'  # 应放在.env文件中, 可在每次启动服务时随机生成
-    JWT_ALGORITHM = 'HS256'
-    JWT_EXP_HOURS = 0.5
-    JWT_LEEWAY = 10  # 检查时间上限
+    # jwt配置, JWT_SECRET_KEY默认使用SECRET_KEY
+    JWT_COOKIE_SECURE = False  # 若为True, 强制使用https, 生产环境应该开启
+    JWT_TOKEN_LOCATION = ['cookies']
+    JWT_ACCESS_TOKEN_EXPIRES = timedelta(hours=1)
+    JWT_REFRESH_WITHIN_HOURS = timedelta(hours=0.5)  # 在里到期的多少时间内才会更新token
 
     # 用户信息要求
     USERNAME_MIN_LEN = 6
@@ -33,6 +38,9 @@ class BaseConfig(object):
 
     # wtf配置
     WTF_CSRF_ENABLED = False  # 有了jwt还需不需要csrf?
+    
+    # flask-docs配置
+    API_DOC_MEMBER = ['problem']
 
 
 Config = BaseConfig

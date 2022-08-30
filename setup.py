@@ -8,6 +8,7 @@ setup(
         'Flask',
         'Flask_Admin',
         'Flask_Cors',
+        'flask_docs',
         'Flask_SQLAlchemy',
         'Flask_WTF',
         'PyJWT',
@@ -15,6 +16,7 @@ setup(
         'SQLAlchemy',
         'toml',
         'WTForms',
-        'email-validator'
+        'email-validator',
+        'Flask-JWT-Extended'
     ]
 )

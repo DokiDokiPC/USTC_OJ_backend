@@ -1,12 +1,8 @@
 from flask import Flask
-from flask_cors import CORS
 
 from backend.config import Config
-from backend.db import db
-from backend.admin import admin
+from backend.extensions import db, admin, jwt, docs, cors
 from backend.blueprints import user_bp, token_bp, problem_bp
-
-from flask_docs import ApiDoc
 
 
 def create_app():
@@ -17,19 +13,12 @@ def create_app():
     # 注册插件
     db.init_app(app)
     admin.init_app(app)
-    CORS(app, resources={r'/*': {'origins': '*'}})
+    jwt.init_app(app)
+    docs.init_app(app)
+    cors.init_app(app)
     # 注册蓝图
     app.register_blueprint(user_bp)
     app.register_blueprint(token_bp)
     app.register_blueprint(problem_bp)
-    
-    
-    app.config["API_DOC_MEMBER"] = ["problem"]
-    ApiDoc(
-        app,
-        title="USTCOJ",
-        version="1.0.0",
-        description="Online Judge",
-    )
     # 返回app
     return app

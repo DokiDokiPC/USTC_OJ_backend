@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from datetime import datetime
 
 from backend.config import get_config
-from backend.db import db
+from backend.extensions.db import db
 
 
 @dataclass
@@ -16,15 +16,11 @@ class Problem(db.Model):
 
 @dataclass
 class User(db.Model):
-    ID: int = db.Column(db.Integer, primary_key=True)
-    username: str = db.Column(db.String(get_config(
-        'USERNAME_MAX_LEN')), nullable=False, unique=True)
+    username: str = db.Column(db.String(get_config('USERNAME_MAX_LEN')), primary_key=True)
     password: str = db.Column(
         db.String(get_config('PWD_MAX_LEN')), nullable=False)
     email: str = db.Column(db.String(get_config(
         'EMAIL_MAX_LEN')), nullable=False, unique=True)
-    nickname: str = db.Column(
-        db.String(get_config('NICKNAME_MAX_LEN')), nullable=False)
 
 
 @dataclass

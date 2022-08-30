@@ -1,4 +1,3 @@
-from backend.db import db
 from backend.models import *
 
 

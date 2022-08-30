@@ -2,19 +2,23 @@ from http import HTTPStatus
 
 from flask import Blueprint
 from sqlalchemy import exc
+from flask_jwt_extended import jwt_required, get_jwt_identity
 
 from backend.models import User
-from backend.db import db
+from backend.extensions.db import db
 from backend.forms import RegisterForm
 
 user_bp = Blueprint('user', __name__, url_prefix='/users')
 
 
-@user_bp.route('/', methods=['GET'], defaults={'user_id': None})
-@user_bp.route('/<int:user_id>', methods=['GET'])
-def get_users(user_id):
-    if user_id:
-        return User.query.filter_by(ID=user_id).all()
+# 返回指定id用户或用户列表
+@user_bp.route('/', methods=['GET'], defaults={'username': None})
+@user_bp.route('/<string:username>', methods=['GET'])
+@jwt_required()
+def get_users(username):
+    if username:
+        current_user = get_jwt_identity()
+        return User.query.filter_by(username=username).all()
     return User.query.all()
 
 
@@ -27,8 +31,7 @@ def post_users():
             return [f'用户{form.username.data}已存在'], HTTPStatus.CONFLICT
         if User.query.filter_by(email=form.email.data).first():
             return [f'邮箱{form.email.data}已存在'], HTTPStatus.CONFLICT
-        new_user = User(username=form.username.data, password=form.password.data,
-                        email=form.email.data, nickname=form.nickname.data)
+        new_user = User(username=form.username.data, password=form.password.data, email=form.email.data)
         try:
             db.session.add(new_user)
             db.session.commit()

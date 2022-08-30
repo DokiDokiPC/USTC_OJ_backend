@@ -1,7 +1,7 @@
 import sys
 from tests.insert_test_data import add_data
-from backend.admin import admin
-from backend.db import db
+from backend.extensions.admin import admin
+from backend.extensions.db import db
 from backend.config import Config
 from flask import Flask
 app = Flask(__name__)
