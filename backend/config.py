@@ -26,6 +26,7 @@ class BaseConfig(object):
     JWT_TOKEN_LOCATION = ['cookies']
     JWT_ACCESS_TOKEN_EXPIRES = timedelta(hours=1)
     JWT_REFRESH_WITHIN_HOURS = timedelta(hours=0.5)  # 在里到期的多少时间内才会更新token
+    JWT_COOKIE_CSRF_PROTECT = False
 
     # 用户信息要求
     USERNAME_MIN_LEN = 6
@@ -36,11 +37,11 @@ class BaseConfig(object):
     NICKNAME_MIN_LEN = -1
     NICKNAME_MAX_LEN = 80
 
-    # wtf配置
-    WTF_CSRF_ENABLED = False  # 有了jwt还需不需要csrf?
-    
     # flask-docs配置
-    API_DOC_MEMBER = ['problem']
+    API_DOC_MEMBER = ['problem', 'user', 'token', 'status']
+    
+    # flask-wtf配置
+    WTF_CSRF_ENABLED = False
 
 
 Config = BaseConfig

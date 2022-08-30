@@ -2,8 +2,7 @@ from flask import Flask
 
 from backend.config import Config
 from backend.extensions import db, admin, jwt, docs, cors
-from backend.blueprints import user_bp, token_bp, problem_bp
-from backend.blueprints import blueprints
+from backend.blueprints import user_bp, token_bp, problem_bp, status_bp
 
 
 def create_app():
@@ -21,19 +20,6 @@ def create_app():
     app.register_blueprint(user_bp)
     app.register_blueprint(token_bp)
     app.register_blueprint(problem_bp)
-    for bp in blueprints:
-        app.register_blueprint(bp)
-
-    # 自动生成文档
-    app.config["API_DOC_MEMBER"] = ["problem"]
-    app.config["API_DOC_MEMBER"] += ["user"]
-    app.config["API_DOC_MEMBER"] += ["token"]
-    app.config["API_DOC_MEMBER"] += ["status"]
-    ApiDoc(
-        app,
-        title="USTCOJ",
-        version="1.0.0",
-        description="Online Judge",
-    )
+    app.register_blueprint(status_bp)
     # 返回app
     return app

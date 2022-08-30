@@ -2,7 +2,7 @@ from http import HTTPStatus
 
 from flask import Blueprint
 from sqlalchemy import exc
-from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask_jwt_extended import jwt_required, get_jwt_identity, get_current_user
 
 from backend.models import User
 from backend.extensions.db import db
@@ -11,16 +11,28 @@ from backend.forms import RegisterForm
 user_bp = Blueprint('user', __name__, url_prefix='/users')
 
 
-# 返回指定id用户或用户列表
-@user_bp.route('/', methods=['GET'], defaults={'username': None})
+# 获取用户列表
+@user_bp.route('/', methods=['GET'])
+@jwt_required()
+def get_users():
+    current_user = get_current_user()
+    if current_user.isAdmin:
+        return User.query.all()
+    return {'msg': 'Permission denied'}, HTTPStatus.FORBIDDEN
+
+
+# 获取指定用户信息
 @user_bp.route('/<string:username>', methods=['GET'])
 @jwt_required()
-def get_users(username):
-    if username:
-        current_user = get_jwt_identity()
+def get_one_user(username):
+    current_user = get_current_user()
+    if username == current_user.username:
+        return [current_user]
+    elif current_user.isAdmin:
         return User.query.filter_by(username=username).all()
-    return User.query.all()
-
+    else:
+        return {'msg': 'Permission denied'}, HTTPStatus.FORBIDDEN
+    
 
 # 创建用户成功返回空body, 状态码201CREATED; 创建用户失败返回错误原因列表
 @user_bp.route('/', methods=['POST'])

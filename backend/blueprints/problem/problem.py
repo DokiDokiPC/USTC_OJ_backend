@@ -16,8 +16,8 @@ def get_problems(problem_id):
     ```
     @@@
     """
-    offset = request.args.get('offset')
-    limit = request.args.get('limit')
     if problem_id:
         return Problem.query.filter_by(ID=problem_id).all()
+    offset = request.args.get('offset')
+    limit = request.args.get('limit')
     return {'problems': Problem.query.offset(offset).limit(limit).all(), 'hint': Problem.query.count()}

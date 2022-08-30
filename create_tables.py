@@ -1,5 +1,5 @@
 from operator import imod
-from backend.models import *
+from backend.extensions.db import db
 from flask import Flask
 import sys
 
