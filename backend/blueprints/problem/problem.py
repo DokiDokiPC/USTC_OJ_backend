@@ -10,8 +10,10 @@ problem_bp = Blueprint('problem', __name__, url_prefix='/problems')
 def get_problems(problem_id):
     """
     @@@
+    ```python
     return 
     {'problems': Problem.query.offset(offset).limit(limit).all(), 'hint': Problem.query.count()}
+    ```
     @@@
     """
     offset = request.args.get('offset')
