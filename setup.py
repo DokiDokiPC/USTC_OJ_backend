@@ -7,11 +7,13 @@ setup(
     install_requires=[
         'Flask',
         'Flask_Admin',
+        'Flask_Cors',
         'Flask_SQLAlchemy',
         'Flask_WTF',
         'PyJWT',
+        'setuptools',
         'SQLAlchemy',
-        'SQLAlchemy-Utils'
+        'toml',
         'WTForms',
         'email-validator'
     ]
