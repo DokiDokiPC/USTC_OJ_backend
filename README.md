@@ -26,3 +26,6 @@ Or
 ```
 
 确保您在根目录(即USTC_OJ_backend)之下运行命令
+
+### 文档查看
+localhost:5000/docs/api
