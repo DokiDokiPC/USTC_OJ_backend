@@ -28,7 +28,7 @@ def refresh_expiring_jwts(response):
 
 # 创建token成功返回Set-Cookie, 状态码200OK; 创建token失败返回错误原因列表
 @token_bp.route('/', methods=['POST'])
-def login():
+def get_token():
     form = LoginForm()
     if form.validate_on_submit():
         user = User.query.filter_by(username=form.username.data).first()
@@ -45,7 +45,7 @@ def login():
 
 # 退出登录
 @token_bp.route('/', methods=['DELETE'])
-def logout():
+def delete_token():
     response = make_response()
     unset_jwt_cookies(response)
     return response

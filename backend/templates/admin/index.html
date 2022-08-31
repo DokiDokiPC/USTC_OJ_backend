@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Login</title>
+</head>
+<body>
+    <ul id="errs_list" hidden></ul>
+    <form>
+        {{ form.username.label }} {{ form.username(size=20) }} <br>
+        {{ form.password.label }} {{ form.password(size=20) }} <br>
+        <input type="button" value="登录" onclick="login()">
+    </form>
+</body>
+<script>
+    async function login() {
+        const form = document.forms[0];
+        const res = await fetch("{{ url_for('token.get_token') }}", {
+            method: "post",
+            credentials: "same-origin",
+            body: new FormData(form)
+        });
+        if (res.ok) window.location.href = "{{ url_for('admin_user.index_view') }}";
+        else {
+            const ul = document.getElementById("errs_list");
+            ul.innerHTML = "";
+            ul.hidden = false;
+            const errs = await res.json();
+            for(const err of errs){
+                const li = document.createElement("li");
+                li.appendChild(document.createTextNode(err));
+                ul.appendChild(li);
+            }
+        }
+    }
+</script>
+</html>

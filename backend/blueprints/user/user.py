@@ -2,11 +2,11 @@ from http import HTTPStatus
 
 from flask import Blueprint
 from sqlalchemy import exc
-from flask_jwt_extended import jwt_required, get_jwt_identity, get_current_user
+from flask_jwt_extended import jwt_required, get_current_user
 
 from backend.models import User
 from backend.extensions.db import db
-from backend.forms import RegisterForm
+from backend.forms import RegisterForm, UpdatePasswordForm
 
 user_bp = Blueprint('user', __name__, url_prefix='/users')
 
@@ -36,7 +36,7 @@ def get_one_user(username):
 
 # 创建用户成功返回空body, 状态码201CREATED; 创建用户失败返回错误原因列表
 @user_bp.route('/', methods=['POST'])
-def post_users():
+def create_user():
     form = RegisterForm()
     if form.validate_on_submit():
         if User.query.filter_by(username=form.username.data).first():
@@ -48,6 +48,22 @@ def post_users():
             db.session.add(new_user)
             db.session.commit()
             return '', HTTPStatus.CREATED
+        except exc.SQLAlchemyError:
+            return ['SQLAlchemyError'], HTTPStatus.NOT_ACCEPTABLE
+    return [err for field in form for err in field.errors], HTTPStatus.NOT_ACCEPTABLE
+
+
+# 更新密码
+@user_bp.route('/', methods=['PUT'])
+@jwt_required()
+def update_user():
+    form = UpdatePasswordForm()
+    if form.validate_on_submit():
+        current_user = get_current_user()
+        form.populate_obj(current_user)
+        try:
+            current_user.save()
+            return ''
         except exc.SQLAlchemyError:
             return ['SQLAlchemyError'], HTTPStatus.NOT_ACCEPTABLE
     return [err for field in form for err in field.errors], HTTPStatus.NOT_ACCEPTABLE

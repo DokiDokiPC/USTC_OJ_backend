@@ -42,6 +42,9 @@ class BaseConfig(object):
     
     # flask-wtf配置
     WTF_CSRF_ENABLED = False
+    
+    # flask-admin配置
+    FLASK_ADMIN_SWATCH = 'simplex'  # bootswatch theme
 
 
 Config = BaseConfig
