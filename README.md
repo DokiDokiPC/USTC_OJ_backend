@@ -29,3 +29,8 @@ Or
 
 ### 文档查看
 localhost:5000/docs/api
+
+### Admin登录
+User增加isAdmin指示用户是否为管理员
+
+localhost:5000/admin
