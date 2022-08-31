@@ -1,7 +1,7 @@
 # USTC_OJ_backend
 
 ### 创建您的数据库配置
-在backendw文件夹下创建文件database_config.toml，并依照以下样例填入你的数据库配置
+在backend文件夹下创建文件database_config.toml，并依照以下样例填入你的数据库配置
 ```text
 USERNAME = "root"
 HOSTNAME = "127.0.0.1"
