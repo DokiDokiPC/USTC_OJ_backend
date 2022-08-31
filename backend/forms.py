@@ -5,7 +5,7 @@ from wtforms.validators import DataRequired, Length, Email, Regexp
 from backend.config import get_config
 
 
-class UpdatePasswordForm(FlaskForm):
+class UpdateForm(FlaskForm):
     password = StringField('密码', validators=[
         DataRequired('密码不能为空'),
         Length(get_config('PWD_MIN_LEN'), get_config('PWD_MAX_LEN'), message='密码长度应在%(min)d到%(max)d之间'),
@@ -14,7 +14,7 @@ class UpdatePasswordForm(FlaskForm):
     ])
 
 
-class LoginForm(UpdatePasswordForm):
+class LoginForm(UpdateForm):
     username = StringField('用户名', validators=[
         DataRequired('用户名不能为空'),
         Length(get_config('USERNAME_MIN_LEN'), get_config('USERNAME_MAX_LEN'), '用户名长度应在%(min)d到%(max)d之间')

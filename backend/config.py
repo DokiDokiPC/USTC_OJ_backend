@@ -1,10 +1,11 @@
 from datetime import timedelta
+from pathlib import Path
 
 import toml
 
 
-def get_SQLALCHEMY_DATABASE_URI():
-    database_config = toml.load("./my_database_config.toml")
+def get_SQLALCHEMY_DATABASE_URI(toml_path):
+    database_config = toml.load(toml_path)
     USERNAME = database_config['USERNAME']
     PASSWORD = database_config['PASSWORD']
     HOSTNAME = database_config['HOSTNAME']
@@ -19,7 +20,9 @@ class BaseConfig(object):
     
     # sqlalchemy配置
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    SQLALCHEMY_DATABASE_URI = get_SQLALCHEMY_DATABASE_URI()
+    SQLALCHEMY_DATABASE_URI = get_SQLALCHEMY_DATABASE_URI(
+        toml_path=(Path(__file__).parent / 'database_config.toml').resolve()
+    )
 
     # jwt配置, JWT_SECRET_KEY默认使用SECRET_KEY
     JWT_COOKIE_SECURE = False  # 若为True, 强制使用https, 生产环境应该开启
@@ -31,8 +34,8 @@ class BaseConfig(object):
     # 用户信息要求
     USERNAME_MIN_LEN = 6
     USERNAME_MAX_LEN = 80
-    PWD_MIN_LEN = 8
-    PWD_MAX_LEN = 80
+    PWD_MIN_LEN = -1
+    PWD_MAX_LEN = 200
     EMAIL_MAX_LEN = 120
     NICKNAME_MIN_LEN = -1
     NICKNAME_MAX_LEN = 80

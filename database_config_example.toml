@@ -1,5 +1,0 @@
-USERNAME = "root"
-HOSTNAME = "127.0.0.1"
-DATABASE_NAME = "ustcoj"
-PASSWORD = "123456"
-PORT = "3306"

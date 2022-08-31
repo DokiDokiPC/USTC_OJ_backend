@@ -1,17 +1,19 @@
 from http import HTTPStatus
 
 from flask import Blueprint
-from sqlalchemy import exc
+from sqlalchemy.exc import SQLAlchemyError
 from flask_jwt_extended import jwt_required, get_current_user
+from argon2 import PasswordHasher
 
 from backend.models import User
 from backend.extensions.db import db
-from backend.forms import RegisterForm, UpdatePasswordForm
+from backend.forms import RegisterForm, UpdateForm
 
 user_bp = Blueprint('user', __name__, url_prefix='/users')
+ph = PasswordHasher()
 
 
-# 获取用户列表
+# 获取所有用户信息
 @user_bp.route('/', methods=['GET'])
 @jwt_required()
 def get_users():
@@ -34,7 +36,7 @@ def get_one_user(username):
         return {'msg': 'Permission denied'}, HTTPStatus.FORBIDDEN
     
 
-# 创建用户成功返回空body, 状态码201CREATED; 创建用户失败返回错误原因列表
+# 创建用户, 返回空body, 状态码201CREATED, 失败返回错误原因列表
 @user_bp.route('/', methods=['POST'])
 def create_user():
     form = RegisterForm()
@@ -43,27 +45,41 @@ def create_user():
             return [f'用户{form.username.data}已存在'], HTTPStatus.CONFLICT
         if User.query.filter_by(email=form.email.data).first():
             return [f'邮箱{form.email.data}已存在'], HTTPStatus.CONFLICT
-        new_user = User(username=form.username.data, password=form.password.data, email=form.email.data)
+        new_user = User(username=form.username.data, password=ph.hash(form.password.data), email=form.email.data)
         try:
             db.session.add(new_user)
             db.session.commit()
             return '', HTTPStatus.CREATED
-        except exc.SQLAlchemyError:
+        except SQLAlchemyError:
             return ['SQLAlchemyError'], HTTPStatus.NOT_ACCEPTABLE
     return [err for field in form for err in field.errors], HTTPStatus.NOT_ACCEPTABLE
 
 
-# 更新密码
+# 更新信息
 @user_bp.route('/', methods=['PUT'])
 @jwt_required()
 def update_user():
-    form = UpdatePasswordForm()
+    form = UpdateForm()
     if form.validate_on_submit():
         current_user = get_current_user()
+        if hasattr(form, 'password'):
+            current_user.password = ph.hash(form.password.data)
         form.populate_obj(current_user)
         try:
             current_user.save()
             return ''
-        except exc.SQLAlchemyError:
+        except SQLAlchemyError:
             return ['SQLAlchemyError'], HTTPStatus.NOT_ACCEPTABLE
     return [err for field in form for err in field.errors], HTTPStatus.NOT_ACCEPTABLE
+
+
+# 删除用户
+@user_bp.route('/', methods=['DELETE'])
+@jwt_required()
+def delete_user():
+    current_user = get_current_user()
+    try:
+        db.session.delete(current_user)
+        db.session.commit()
+    except SQLAlchemyError:
+        return ['SQLAlchemyError'], HTTPStatus.NO_CONTENT
