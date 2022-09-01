@@ -2,7 +2,7 @@ from datetime import datetime, timezone
 from http import HTTPStatus
 
 from flask import Blueprint, make_response
-from flask_jwt_extended import get_jwt, create_access_token, get_jwt_identity, set_access_cookies, unset_jwt_cookies
+from flask_jwt_extended import get_jwt, create_access_token, get_jwt_identity, set_access_cookies, unset_access_cookies
 from argon2 import PasswordHasher
 from argon2.exceptions import VerifyMismatchError, InvalidHash
 
@@ -29,31 +29,58 @@ def refresh_expiring_jwts(response):
         return response
 
 
-# 创建token成功返回Set-Cookie, 状态码200OK; 创建token失败返回错误原因列表
 @token_bp.route('/', methods=['POST'])
 def get_token():
+    """
+    @@@
+    ### request
+    ```json
+    {'username': 'xxx', 'password': 'xxx'}
+    ```
+    ### response
+    #### success
+    ```json
+    Set-Cookie: access_token_cookie=jwt, OK
+    ```
+    #### error
+    ```json
+    ['form_validation_error1', 'form_validation_error2', ...]
+    ['username xxx does not exist']
+    ['Wrong password']
+    ['InvalidHash, please contact the administrator']
+    ```
+    @@@
+    """
     form = LoginForm()
-    if form.validate_on_submit():
-        user = User.query.filter_by(username=form.username.data).first()
-        if not user:
-            return [f'用户{form.username.data}不存在'], HTTPStatus.UNAUTHORIZED
-        try:
-            ph.verify(user.password, form.password.data)
-            response = make_response()
-            access_token = create_access_token(identity=form.username.data)
-            set_access_cookies(response, access_token)
-            return response
-        except VerifyMismatchError:
-            return ['密码错误'], HTTPStatus.UNAUTHORIZED
-        except InvalidHash:
-            return ['InvalidHash, 请联系管理员'], HTTPStatus.UNAUTHORIZED
-        
-    return [err for field in form for err in field.errors], HTTPStatus.UNAUTHORIZED
+    if not form.validate_on_submit():
+        # 返回所有表单验证错误信息
+        return [err for field in form for err in field.errors], HTTPStatus.UNAUTHORIZED
+    user = User.query.filter_by(username=form.username.data).first()
+    if not user:
+        return [f'username {form.username.data} does not exist'], HTTPStatus.UNAUTHORIZED
+    try:
+        ph.verify(user.password, form.password.data)
+        response = make_response()
+        access_token = create_access_token(identity=form.username.data)
+        set_access_cookies(response, access_token)
+        return response
+    except VerifyMismatchError:
+        return ['Wrong password'], HTTPStatus.UNAUTHORIZED
+    except InvalidHash:
+        return ['InvalidHash, please contact the administrator'], HTTPStatus.UNAUTHORIZED
 
 
-# 退出登录
 @token_bp.route('/', methods=['DELETE'])
 def delete_token():
+    """
+    @@@
+    ### response
+    #### success
+    ```json
+    Set-Cookie: access_token_cookie=, OK
+    ```
+    @@@
+    """
     response = make_response()
-    unset_jwt_cookies(response)
+    unset_access_cookies(response)
     return response

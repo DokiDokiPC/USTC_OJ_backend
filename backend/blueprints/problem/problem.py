@@ -1,6 +1,7 @@
 from flask import Blueprint, request
 
 from backend.models import Problem
+from backend.extensions.db import table_count
 
 problem_bp = Blueprint('problem', __name__, url_prefix='/problems')
 
@@ -17,7 +18,7 @@ def get_problems(problem_id):
     @@@
     """
     if problem_id:
-        return Problem.query.filter_by(ID=problem_id).all()
+        return Problem.query.filter_by(id=problem_id).all()
     offset = request.args.get('offset')
     limit = request.args.get('limit')
-    return {'problems': Problem.query.offset(offset).limit(limit).all(), 'hint': Problem.query.count()}
+    return {'problems': Problem.query.offset(offset).limit(limit).all(), 'total_count': table_count(Problem)}

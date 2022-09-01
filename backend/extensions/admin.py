@@ -22,7 +22,7 @@ class AdminView(ModelView):
 
     @jwt_required()
     def is_accessible(self):
-        return get_current_user() and get_current_user().isAdmin
+        return get_current_user() and get_current_user().is_admin
 
 
 admin = Admin(name='ustcoj', template_mode='bootstrap3', index_view=HomeView('login'))

@@ -14,14 +14,14 @@ app.config.from_object(Config)
 db.init_app(app)
 with app.app_context():
     for i in range(1, 19):
-        db.session.add(Problem(ID=1000 + i, Title=f'A+B问题@{str(i).zfill(3)}',
-                               Level='Easy', ac_num=2, submit_num=10))
+        db.session.add(Problem(id=1000 + i, title=f'A+B问题@{str(i).zfill(3)}',
+                               level='Easy', ac_num=2, submit_num=10))
     
     ph = PasswordHasher()
     db.session.add(User(username='Nyan_the_cat', password=ph.hash('1234567a'),
                         email='aaa@aaa.com'))
     db.session.add(User(username='adminadmin', password=ph.hash('adminadmin1'),
-                        email='admin@mail.com', isAdmin=True))
+                        email='admin@mail.com', is_admin=True))
     
     db.session.commit()
     

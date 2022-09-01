@@ -19,5 +19,5 @@ def get_status(status_id):
     offset = request.args.get('offset')
     limit = request.args.get('limit')
     if status_id:
-        return Status.query.filter_by(ID=status_id).all()
+        return Status.query.filter_by(id=status_id).all()
     return {'status': Status.query.offset(offset).limit(limit).all(), 'hint': Status.query.count()}

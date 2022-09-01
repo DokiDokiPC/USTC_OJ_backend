@@ -34,7 +34,7 @@ class BaseConfig(object):
     # 用户信息要求
     USERNAME_MIN_LEN = 6
     USERNAME_MAX_LEN = 80
-    PWD_MIN_LEN = -1
+    PWD_MIN_LEN = 8
     PWD_MAX_LEN = 200
     EMAIL_MAX_LEN = 120
     NICKNAME_MIN_LEN = -1
