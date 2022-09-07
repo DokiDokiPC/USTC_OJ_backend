@@ -48,6 +48,9 @@ class BaseConfig(object):
     
     # flask-admin配置
     FLASK_ADMIN_SWATCH = 'simplex'  # bootswatch theme
+    
+    # 查询分页配置
+    QUERY_LIMIT = 10
 
 
 Config = BaseConfig

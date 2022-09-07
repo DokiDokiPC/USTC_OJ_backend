@@ -13,8 +13,8 @@ app = Flask(__name__)
 app.config.from_object(Config)
 db.init_app(app)
 with app.app_context():
-    for i in range(1, 19):
-        db.session.add(Problem(id=1000 + i, title=f'A+B问题@{str(i).zfill(3)}',
+    for i in range(1001, 2001):
+        db.session.add(Problem(id=i, title=f'A+B问题@{i}',
                                level='Easy', ac_num=2, submit_num=10))
     
     ph = PasswordHasher()
@@ -27,23 +27,23 @@ with app.app_context():
     
     db.session.add(Status(
         **{
-            'submitTime': "2022-3-1",
-            'problemId': "1001",
+            'submit_time': "2022-3-1",
+            'problem_id': "1001",
             'coder': "Nyan_the_cat",
             'status': "Accepted",
-            'timeCost': "10",
-            'memoryCost': "30"
+            'time_cost': "10",
+            'memory_cost': "30"
         }
     ))
     
     db.session.add(Status(
         **{
-            'submitTime': "2022-3-1",
-            'problemId': "1002",
+            'submit_time': "2022-3-1",
+            'problem_id': "1002",
             'coder': "Nyan_the_cat",
             'status': "Compile Error",
-            'timeCost': None,
-            'memoryCost': None
+            'time_cost': None,
+            'memory_cost': None
         }
     ))
     
