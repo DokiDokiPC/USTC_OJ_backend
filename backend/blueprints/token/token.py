@@ -2,7 +2,8 @@ from datetime import datetime, timezone
 from http import HTTPStatus
 
 from flask import Blueprint, make_response
-from flask_jwt_extended import get_jwt, create_access_token, get_jwt_identity, set_access_cookies, unset_access_cookies
+from flask_jwt_extended import get_jwt, create_access_token, get_jwt_identity, set_access_cookies,\
+    unset_access_cookies, jwt_required
 from argon2 import PasswordHasher
 from argon2.exceptions import VerifyMismatchError, InvalidHash
 
@@ -29,28 +30,9 @@ def refresh_expiring_jwts(response):
         return response
 
 
+# 获取一个jwt
 @token_bp.route('/', methods=['POST'])
 def get_token():
-    """
-    @@@
-    ### request
-    ```json
-    {'username': 'xxx', 'password': 'xxx'}
-    ```
-    ### response
-    #### success
-    ```json
-    Set-Cookie: access_token_cookie=jwt, OK
-    ```
-    #### error
-    ```json
-    ['form_validation_error1', 'form_validation_error2', ...]
-    ['username xxx does not exist']
-    ['Wrong password']
-    ['InvalidHash, please contact the administrator']
-    ```
-    @@@
-    """
     form = LoginForm()
     if not form.validate_on_submit():
         # 返回所有表单验证错误信息
@@ -70,17 +52,16 @@ def get_token():
         return ['InvalidHash, please contact the administrator'], HTTPStatus.UNAUTHORIZED
 
 
+# 删除jwt
 @token_bp.route('/', methods=['DELETE'])
 def delete_token():
-    """
-    @@@
-    ### response
-    #### success
-    ```json
-    Set-Cookie: access_token_cookie=, OK
-    ```
-    @@@
-    """
     response = make_response()
     unset_access_cookies(response)
     return response
+
+
+# 测试jwt是否有效, 如果没有或者无效, 会返回401-UNAUTHORIZED
+@token_bp.route('/', methods=['HEAD'])
+@jwt_required()
+def test_token():
+    return '', HTTPStatus.OK

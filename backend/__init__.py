@@ -1,7 +1,7 @@
 from flask import Flask
 
 from backend.config import Config
-from backend.extensions import db, admin, jwt, docs, cors
+from backend.extensions import db, admin, jwt, cors
 from backend.blueprints import user_bp, token_bp, problem_bp, status_bp
 
 
@@ -14,7 +14,6 @@ def create_app():
     db.init_app(app)
     admin.init_app(app)
     jwt.init_app(app)
-    docs.init_app(app)
     cors.init_app(app)
     # 注册蓝图
     app.register_blueprint(user_bp)

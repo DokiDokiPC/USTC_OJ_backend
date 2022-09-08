@@ -14,27 +14,10 @@ user_bp = Blueprint('user', __name__, url_prefix='/users')
 ph = PasswordHasher()
 
 
+# 获取当前用户信息
 @user_bp.route('/<string:username>', methods=['GET'])
 @jwt_required()
 def get_user(username):
-    """
-    @@@
-    ### request
-    ```json
-    Cookie: access_token_cookie=jwt
-    ```
-    ### response
-    #### success
-    ```json
-    jsonify(current_user), OK
-    ```
-    #### error
-    ```json
-    ['Your account has been deleted']
-    ['Permission denied']
-    ```
-    @@@
-    """
     current_user = get_current_user()
     if not current_user:
         # 数据库中找不到用户, 可能是删除账号后未删除token
@@ -44,29 +27,10 @@ def get_user(username):
     else:
         return jsonify(current_user)
 
-    
+
+# 创建新用户
 @user_bp.route('/', methods=['POST'])
 def create_user():
-    """
-    @@@
-    ### request
-    ```json
-    {'username': 'xxx', 'password': 'xxx', 'email': 'xxx'}
-    ```
-    ### response
-    #### success
-    ```json
-    '', CREATED
-    ```
-    #### error
-    ```json
-    ['form_validation_error1', 'form_validation_error2', ...]
-    ['username xxx already exists']
-    ['email xxx already exists']
-    ['SQLAlchemyError']
-    ```
-    @@@
-    """
     form = RegisterForm()
     if not form.validate_on_submit():
         # 返回所有表单验证错误信息
@@ -82,32 +46,12 @@ def create_user():
         return '', HTTPStatus.CREATED
     except SQLAlchemyError:
         return ['SQLAlchemyError'], HTTPStatus.NOT_ACCEPTABLE
-        
 
+
+# 更改信息
 @user_bp.route('/<string:username>', methods=['PUT'])
 @jwt_required()
 def update_user(username):
-    """
-    @@@
-    ### request
-    ```json
-    {'password': 'xxx'}
-    ```
-    ### response
-    #### success
-    ```json
-    '', OK
-    Set-Cookie: access_token_cookie=new_jwt, OK, if password changed
-    ```
-    #### error
-    ```json
-    ['form_validation_error1', 'form_validation_error2', ...]
-    ['Your account has been deleted']
-    ['Permission denied']
-    ['SQLAlchemyError']
-    ```
-    @@@
-    """
     form = UpdateForm()
     if not form.validate_on_submit():
         # 返回所有表单验证错误信息
@@ -134,28 +78,10 @@ def update_user(username):
         return ['SQLAlchemyError'], HTTPStatus.NOT_ACCEPTABLE
 
 
+# 删除用户
 @user_bp.route('/<string:username>', methods=['DELETE'])
 @jwt_required()
 def delete_user(username):
-    """
-    @@@
-    ### request
-    ```json
-    Cookie: access_token_cookie=jwt
-    ```
-    ### response
-    #### success
-    ```json
-    '', NO_CONTENT
-    ```
-    #### error
-    ```json
-    ['Your account has been deleted']
-    ['Permission denied']
-    ['SQLAlchemyError']
-    ```
-    @@@
-    """
     current_user = get_current_user()
     if not current_user:
         # 数据库中找不到用户, 可能是删除账号后未删除token

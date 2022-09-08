@@ -9,7 +9,6 @@ setup(
         'Flask',
         'Flask_Admin',
         'Flask_Cors',
-        'flask_Docs',
         'Flask-JWT-Extended',
         'Flask_SQLAlchemy',
         'Flask_WTF',

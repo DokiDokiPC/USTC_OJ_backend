@@ -24,12 +24,13 @@ class BaseConfig(object):
         toml_path=(Path(__file__).parent / 'database_config.toml').resolve()
     )
 
-    # jwt配置, JWT_SECRET_KEY默认使用SECRET_KEY
+    # flask-jwt-extended配置, JWT_SECRET_KEY默认使用SECRET_KEY
     JWT_COOKIE_SECURE = False  # 若为True, 强制使用https, 生产环境应该开启
+    JWT_SESSION_COOKIE = False  # 设置为True时, cookie的expires/Max-Age为Session
     JWT_TOKEN_LOCATION = ['cookies']
     JWT_ACCESS_TOKEN_EXPIRES = timedelta(hours=1)
     JWT_REFRESH_WITHIN_HOURS = timedelta(hours=0.5)  # 在里到期的多少时间内才会更新token
-    JWT_COOKIE_CSRF_PROTECT = False
+    JWT_COOKIE_CSRF_PROTECT = False  # 待研究
 
     # 用户信息要求
     USERNAME_MIN_LEN = 6
@@ -39,13 +40,13 @@ class BaseConfig(object):
     EMAIL_MAX_LEN = 120
     NICKNAME_MIN_LEN = -1
     NICKNAME_MAX_LEN = 80
-
-    # flask-docs配置
-    API_DOC_MEMBER = ['problem', 'user', 'token', 'status']
     
     # flask-wtf配置
     WTF_CSRF_ENABLED = False
     
+    # flask-cors配置
+    CORS_SUPPORTS_CREDENTIALS = True  # 允许传递和设置cookie
+
     # flask-admin配置
     FLASK_ADMIN_SWATCH = 'simplex'  # bootswatch theme
     
