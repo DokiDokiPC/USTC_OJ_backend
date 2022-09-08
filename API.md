@@ -8,13 +8,13 @@
 
 ##### success
 
-```json
+```
 jsonify(current_user), 200-OK
 ```
 
 ##### error
 
-```json
+```
 ['err_msg', ...]
 ```
 
@@ -24,19 +24,19 @@ jsonify(current_user), 200-OK
 
 ##### request
 
-```json
+```
 {'username': 'xxx', 'password': 'xxx', 'email': 'xxx'}
 ```
 
 ##### success
 
-```json
+```
 201-CREATED
 ```
 
 ##### error
 
-```json
+```
 ['err_msg', ...]
 ```
 
@@ -48,20 +48,20 @@ jsonify(current_user), 200-OK
 
 ##### request
 
-```json
+```
 {'password': 'xxx'}
 ```
 
 ##### success
 
-```json
+```
 200-OK
 Set-Cookie: access_token_cookie=new_jwt, OK, if password changed
 ```
 
 ##### error
 
-```json
+```
 ['err_msg', ...]
 ```
 
@@ -73,13 +73,13 @@ Set-Cookie: access_token_cookie=new_jwt, OK, if password changed
 
 ##### success
 
-```json
+```
 204-NO_CONTENT
 ```
 
 ##### error
 
-```json
+```
 ['err_msg', ...]
 ```
 
@@ -91,19 +91,19 @@ Set-Cookie: access_token_cookie=new_jwt, OK, if password changed
 
 ##### request
 
-```json
+```
 {'username': 'xxx', 'password': 'xxx'}
 ```
 
 ##### success
 
-```json
+```
 200-OK, Set-Cookie: access_token_cookie=jwt
 ```
 
 ##### error
 
-```json
+```
 ['err_msg', ...]
 ```
 
@@ -113,7 +113,7 @@ Set-Cookie: access_token_cookie=new_jwt, OK, if password changed
 
 ##### success
 
-```json
+```
 200-OK, Set-Cookie: access_token_cookie=;
 ```
 
@@ -123,12 +123,12 @@ Set-Cookie: access_token_cookie=new_jwt, OK, if password changed
 
 ##### success
 
-```json
+```
 200-OK
 ```
 
 ##### error
 
-```json
+```
 401-UNAUTHORIZED
 ```
