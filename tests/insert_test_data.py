@@ -18,9 +18,9 @@ with app.app_context():
                                level='Easy', ac_num=2, submit_num=10))
     
     ph = PasswordHasher()
-    db.session.add(User(username='Nyan_the_cat', password=ph.hash('1234567a'),
+    db.session.add(User(username='Nyan', password=ph.hash('1111111a'),
                         email='aaa@aaa.com'))
-    db.session.add(User(username='adminadmin', password=ph.hash('adminadmin1'),
+    db.session.add(User(username='admin', password=ph.hash('1111111a'),
                         email='admin@mail.com', is_admin=True))
     
     db.session.commit()
@@ -29,7 +29,7 @@ with app.app_context():
         **{
             'submit_time': "2022-3-1",
             'problem_id': "1001",
-            'coder': "Nyan_the_cat",
+            'coder': "Nyan",
             'status': "Accepted",
             'time_cost': "10",
             'memory_cost': "30"
@@ -40,7 +40,7 @@ with app.app_context():
         **{
             'submit_time': "2022-3-1",
             'problem_id': "1002",
-            'coder': "Nyan_the_cat",
+            'coder': "Nyan",
             'status': "Compile Error",
             'time_cost': None,
             'memory_cost': None

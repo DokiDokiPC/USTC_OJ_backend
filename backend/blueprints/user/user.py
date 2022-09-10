@@ -32,18 +32,24 @@ def get_user(username):
 @user_bp.route('/', methods=['POST'])
 def create_user():
     form = RegisterForm()
+    # 用户名和密码去空格, 邮箱使用正则表达式匹配, 不用去空格
+    print(f'"{form.username.data}"')
     if not form.validate_on_submit():
         # 返回所有表单验证错误信息
         return [err for field in form for err in field.errors], HTTPStatus.NOT_ACCEPTABLE
     if User.query.filter_by(username=form.username.data).first():
-        return [f'username {form.username.data} already exists'], HTTPStatus.CONFLICT
+        return [f'Username "{form.username.data}" already exists'], HTTPStatus.CONFLICT
     if User.query.filter_by(email=form.email.data).first():
-        return [f'email {form.email.data} already exists'], HTTPStatus.CONFLICT
+        return [f'Email {form.email.data} already exists'], HTTPStatus.CONFLICT
     new_user = User(username=form.username.data, password=ph.hash(form.password.data), email=form.email.data)
     try:
         db.session.add(new_user)
         db.session.commit()
-        return '', HTTPStatus.CREATED
+        # 创建成功了也返回一个JWT, 直接登录成功
+        response = make_response()
+        access_token = create_access_token(identity=form.username.data)
+        set_access_cookies(response, access_token)
+        return response, HTTPStatus.CREATED
     except SQLAlchemyError:
         return ['SQLAlchemyError'], HTTPStatus.NOT_ACCEPTABLE
 

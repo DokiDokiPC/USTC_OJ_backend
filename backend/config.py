@@ -2,7 +2,11 @@ from datetime import timedelta
 from pathlib import Path
 
 import toml
+from argon2 import PasswordHasher
 
+def get_hashed_password_len():
+    ph = PasswordHasher()
+    return len(ph.hash(''))
 
 def get_SQLALCHEMY_DATABASE_URI(toml_path):
     database_config = toml.load(toml_path)
@@ -18,7 +22,7 @@ class BaseConfig(object):
     # flask密钥
     SECRET_KEY = 'secret'
     
-    # sqlalchemy配置
+    # flask-sqlalchemy配置
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_DATABASE_URI = get_SQLALCHEMY_DATABASE_URI(
         toml_path=(Path(__file__).parent / 'database_config.toml').resolve()
@@ -33,13 +37,14 @@ class BaseConfig(object):
     JWT_COOKIE_CSRF_PROTECT = False  # 待研究
 
     # 用户信息要求
-    USERNAME_MIN_LEN = 6
-    USERNAME_MAX_LEN = 80
+    USERNAME_MIN_LEN = 2
+    USERNAME_MAX_LEN = 128
     PWD_MIN_LEN = 8
-    PWD_MAX_LEN = 200
-    EMAIL_MAX_LEN = 120
+    PWD_MAX_LEN = 256
+    PWD_HASHED_LEN = get_hashed_password_len()
+    EMAIL_MAX_LEN = 128
     NICKNAME_MIN_LEN = -1
-    NICKNAME_MAX_LEN = 80
+    NICKNAME_MAX_LEN = 128
     
     # flask-wtf配置
     WTF_CSRF_ENABLED = False

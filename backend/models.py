@@ -17,7 +17,7 @@ class Problem(db.Model):
 @dataclass
 class User(db.Model):
     username: str = db.Column(db.String(get_config('USERNAME_MAX_LEN')), primary_key=True)
-    password: str = db.Column(db.String(get_config('PWD_MAX_LEN')), nullable=False)
+    password: str = db.Column(db.String(get_config('PWD_HASHED_LEN')), nullable=False)
     email: str = db.Column(db.String(get_config('EMAIL_MAX_LEN')), nullable=False, unique=True)
     is_admin: bool = db.Column(db.Boolean(), nullable=False, default=False)
 

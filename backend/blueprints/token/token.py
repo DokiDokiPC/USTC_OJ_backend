@@ -39,7 +39,7 @@ def get_token():
         return [err for field in form for err in field.errors], HTTPStatus.UNAUTHORIZED
     user = User.query.filter_by(username=form.username.data).first()
     if not user:
-        return [f'username {form.username.data} does not exist'], HTTPStatus.UNAUTHORIZED
+        return [f'Username "{form.username.data}" does not exist'], HTTPStatus.UNAUTHORIZED
     try:
         ph.verify(user.password, form.password.data)
         response = make_response()
