@@ -25,23 +25,23 @@ with app.app_context():
     
     db.session.commit()
     
-    db.session.add(Status(
+    db.session.add(Submission(
         **{
             'submit_time': "2022-3-1",
             'problem_id': "1001",
             'coder': "Nyan",
-            'status': "Accepted",
+            'submission': "Accepted",
             'time_cost': "10",
             'memory_cost': "30"
         }
     ))
     
-    db.session.add(Status(
+    db.session.add(Submission(
         **{
             'submit_time': "2022-3-1",
             'problem_id': "1002",
             'coder': "Nyan",
-            'status': "Compile Error",
+            'submission': "Compile Error",
             'time_cost': None,
             'memory_cost': None
         }

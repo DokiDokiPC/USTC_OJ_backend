@@ -23,14 +23,14 @@ class User(db.Model):
 
 
 @dataclass
-class Status(db.Model):
+class Submission(db.Model):
     id: int = db.Column(db.Integer, primary_key=True)
-    submit_time: datetime = db.Column(db.DateTime, nullable=False)
+    submission_time: datetime = db.Column(db.DateTime, nullable=False)
     problem_id: int = db.Column(
         db.Integer, db.ForeignKey('problem.id'), nullable=False,)
-    coder: str = db.Column(db.String(80), db.ForeignKey(
+    username: str = db.Column(db.String(80), db.ForeignKey(
         'user.username'), nullable=False)
-    status: str = db.Column(db.String(20), nullable=False)
+    result: str = db.Column(db.String(20), nullable=False)
     # time_cost ms
     time_cost: int = db.Column(db.Integer)
     # memory_cost KB

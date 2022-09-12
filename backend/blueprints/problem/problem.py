@@ -1,7 +1,7 @@
 from flask import Blueprint, request
 
 from backend.models import Problem
-from backend.extensions.db import table_count
+from backend.extensions.db import quick_table_count
 from backend.config import get_config
 
 problem_bp = Blueprint('problem', __name__, url_prefix='/problems')
@@ -13,7 +13,7 @@ def get_problems():
     offset = request.args.get('offset', 0, type=int)
     return {
         'problems': Problem.query.offset(offset).limit(get_config('QUERY_LIMIT')).all(),
-        'total_count': table_count(Problem),
+        'total_count': quick_table_count(Problem),
         'page_size': get_config('QUERY_LIMIT')
     }
 

@@ -2,7 +2,7 @@ from flask_admin import Admin, AdminIndexView, expose
 from flask_admin.contrib.sqla import ModelView
 from flask_jwt_extended import jwt_required, get_current_user
 
-from backend.models import User, Problem, Status
+from backend.models import User, Problem, Submission
 from backend.extensions.db import db
 from backend.forms import LoginForm
 
@@ -28,4 +28,4 @@ class AdminView(ModelView):
 admin = Admin(name='ustcoj', template_mode='bootstrap3', index_view=HomeView('login'))
 admin.add_view(AdminView(User, db.session, name='Users', endpoint='admin_user'))
 admin.add_view(AdminView(Problem, db.session, name='Problems', endpoint='admin_problem'))
-admin.add_view(AdminView(Status, db.session, name='Status', endpoint='admin_status'))
+admin.add_view(AdminView(Submission, db.session, name='Submissions', endpoint='admin_submission'))

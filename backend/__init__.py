@@ -2,7 +2,7 @@ from flask import Flask
 
 from backend.config import Config
 from backend.extensions import db, admin, jwt, cors
-from backend.blueprints import user_bp, token_bp, problem_bp, status_bp
+from backend.blueprints import user_bp, token_bp, problem_bp, submission_bp
 
 
 def create_app():
@@ -19,6 +19,6 @@ def create_app():
     app.register_blueprint(user_bp)
     app.register_blueprint(token_bp)
     app.register_blueprint(problem_bp)
-    app.register_blueprint(status_bp)
+    app.register_blueprint(submission_bp)
     # 返回app
     return app
