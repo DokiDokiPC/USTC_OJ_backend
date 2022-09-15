@@ -27,10 +27,10 @@ with app.app_context():
     
     db.session.add(Submission(
         **{
-            'submit_time': "2022-3-1",
+            'submission_time': "2022-3-1",
             'problem_id': "1001",
-            'coder': "Nyan",
-            'submission': "Accepted",
+            'username': "Nyan",
+            'result': "Accepted",
             'time_cost': "10",
             'memory_cost': "30"
         }
@@ -38,10 +38,10 @@ with app.app_context():
     
     db.session.add(Submission(
         **{
-            'submit_time': "2022-3-1",
+            'submission_time': "2022-3-1",
             'problem_id': "1002",
-            'coder': "Nyan",
-            'submission': "Compile Error",
+            'username': "Nyan",
+            'result': "Compile Error",
             'time_cost': None,
             'memory_cost': None
         }
