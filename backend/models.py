@@ -14,21 +14,18 @@ class Problem(db.Model):
     level: str = db.Column(db.String(20), nullable=False)
     ac_num: int = db.Column(db.Integer, nullable=False, default=0)
     submit_num: int = db.Column(db.Integer, nullable=False, default=0)
-
-
-@dataclass
-class ProblemDetail(db.Model):
-    id: int = db.Column(db.Integer, db.ForeignKey(
-        'problem.id'), primary_key=True)
     # 题目描述
-    description: str = db.Column(db.Unicode, nullable=False)
+    description: str = db.Column(db.Unicode(2000), nullable=False)
     # 时间空间限制
     time_limit: int = db.Column(db.Integer, nullable=False)
-    mempry_limit: int = db.Column(db.Integer, nullable=False)
+    memory_limit: int = db.Column(db.Integer, nullable=False)
+    # 样例存在 data/Problems/<id>/examples/<example_id>.txt中
+    # 其他测试用例存在 data/Problems/<id>/tests/<test_id>.txt中
+    
     # 样例路径
-    example_path: str = db.Column(db.String(120), nullable=False)
+    # example_path: str = db.Column(db.String(120), nullable=False)
     # 所有测试用例路径
-    tests_path: str = db.Column(db.String(120), nullable=False)
+    # tests_path: str = db.Column(db.String(120), nullable=False)
 
 
 @dataclass
