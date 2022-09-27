@@ -16,12 +16,16 @@ class Problem(db.Model):
     submit_num: int = db.Column(db.Integer, nullable=False, default=0)
     # 题目描述
     description: str = db.Column(db.Unicode(2000), nullable=False)
+    # 输入格式
+    input_description: str = db.Column(db.Unicode(2000), nullable=False)
+    # 输出格式
+    output_description: str = db.Column(db.Unicode(2000), nullable=False)
     # 时间空间限制
     time_limit: int = db.Column(db.Integer, nullable=False)
     memory_limit: int = db.Column(db.Integer, nullable=False)
     # 样例存在 data/Problems/<id>/examples/<example_id>.txt中
     # 其他测试用例存在 data/Problems/<id>/tests/<test_id>.txt中
-    
+
     # 样例路径
     # example_path: str = db.Column(db.String(120), nullable=False)
     # 所有测试用例路径
@@ -53,6 +57,14 @@ class User(db.Model):
     email: str = db.Column(db.String(get_config(
         'EMAIL_MAX_LEN')), nullable=False, unique=True)
     is_admin: bool = db.Column(db.Boolean(), nullable=False, default=False)
+
+
+@dataclass
+class PassedProblem(db.Model):
+    username: str = db.Column(db.String(get_config(
+        'USERNAME_MAX_LEN')), db.ForeignKey('user.id'), primary_key=True)
+    problem_id: int = db.Column(
+        db.Integer, db.ForeignKey('problem.id'), primary_key=True)
 
 
 @dataclass
