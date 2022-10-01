@@ -1,4 +1,3 @@
-from asyncio import ProactorEventLoop
 from http import HTTPStatus
 from flask import Blueprint, request
 from flask_sqlalchemy import SQLAlchemy
@@ -51,8 +50,8 @@ def create_problem():
 
 
 # 修改问题
-@problem_bp.route('/<id:problem_id>', methods=['PUT'])
-def create_problem(problem_id):
+@problem_bp.route('/<int:problem_id>', methods=['PUT'])
+def change_problem(problem_id):
     data = request.get_json()
     new_problem = Problem(**data)
     now_problem = Problem.query().get(problem_id)
@@ -65,8 +64,8 @@ def create_problem(problem_id):
 
 
 # 删除问题
-@problem_bp.route('/<id:problem_id>', methods=['PUT'])
-def create_problem(problem_id):
+@problem_bp.route('/<int:problem_id>', methods=['PUT'])
+def delete_problem(problem_id):
     if problem_already_exist(problem_id):
         pass
     else:
