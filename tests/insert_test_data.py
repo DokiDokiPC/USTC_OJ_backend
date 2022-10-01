@@ -20,6 +20,8 @@ with app.app_context():
                                ac_num=2,
                                submit_num=10,
                                description="输入两个数字a和b，输出a+b",
+                               input_description="两个数字 由空格分割 每行一组",
+                               output_description="一个数字 为输入的两个数字的和 每行一组",
                                time_limit=1000,
                                memory_limit=10,
                                ))

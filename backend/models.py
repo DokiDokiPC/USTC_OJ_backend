@@ -26,12 +26,13 @@ class Problem(db.Model):
     # 样例存在 data/Problems/<id>/examples/<example_id>.txt中
     # 其他测试用例存在 data/Problems/<id>/tests/<test_id>.txt中
 
+    # 下列属性已废弃
     # 样例路径
     # example_path: str = db.Column(db.String(120), nullable=False)
     # 所有测试用例路径
     # tests_path: str = db.Column(db.String(120), nullable=False)
 
-
+                                                                        
 @dataclass
 class Contest(db.Model):
     id: int = db.Column(db.Integer, primary_key=True)
@@ -62,7 +63,7 @@ class User(db.Model):
 @dataclass
 class PassedProblem(db.Model):
     username: str = db.Column(db.String(get_config(
-        'USERNAME_MAX_LEN')), db.ForeignKey('user.id'), primary_key=True)
+        'USERNAME_MAX_LEN')), db.ForeignKey('user.username'), primary_key=True)
     problem_id: int = db.Column(
         db.Integer, db.ForeignKey('problem.id'), primary_key=True)
 

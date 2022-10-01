@@ -41,7 +41,8 @@ def create_user():
         return [f'Username "{form.username.data}" already exists'], HTTPStatus.CONFLICT
     if User.query.filter_by(email=form.email.data).first():
         return [f'Email {form.email.data} already exists'], HTTPStatus.CONFLICT
-    new_user = User(username=form.username.data, password=ph.hash(form.password.data), email=form.email.data)
+    new_user = User(username=form.username.data, password=ph.hash(
+        form.password.data), email=form.email.data)
     try:
         db.session.add(new_user)
         db.session.commit()
@@ -79,7 +80,7 @@ def update_user(username):
             # 如果更改了密码, 重新设置access_token_cookie
             access_token = create_access_token(identity=current_user.username)
             set_access_cookies(response, access_token)
-        return response
+        return response, HTTPStatus.OK
     except SQLAlchemyError:
         return ['SQLAlchemyError'], HTTPStatus.NOT_ACCEPTABLE
 
@@ -91,7 +92,7 @@ def delete_user(username):
     current_user = get_current_user()
     if not current_user:
         # 数据库中找不到用户, 可能是删除账号后未删除token
-        return ['Your account has been deleted'], HTTPStatus.NO_CONTENT
+        return ['Your account has been deleted'], HTTPStatus.CONFLICT
     if current_user.username != username:
         return ['Permission denied'], HTTPStatus.FORBIDDEN
     try:
