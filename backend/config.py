@@ -8,14 +8,7 @@ def get_hashed_password_len():
     ph = PasswordHasher()
     return len(ph.hash(''))
 
-def get_SQLALCHEMY_DATABASE_URI(toml_path):
-    database_config = toml.load(toml_path)
-    USERNAME = database_config['USERNAME']
-    PASSWORD = database_config['PASSWORD']
-    HOSTNAME = database_config['HOSTNAME']
-    PORT = database_config['PORT']
-    DATABASE = database_config['DATABASE_NAME']
-    return f'mysql+pymysql://{USERNAME}:{PASSWORD}@{HOSTNAME}:{PORT}/{DATABASE}'
+config_toml = toml.load((Path(__file__).parent / 'config.toml').resolve())
 
 
 class BaseConfig(object):
@@ -24,9 +17,7 @@ class BaseConfig(object):
     
     # flask-sqlalchemy配置
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    SQLALCHEMY_DATABASE_URI = get_SQLALCHEMY_DATABASE_URI(
-        toml_path=(Path(__file__).parent / 'database_config.toml').resolve()
-    )
+    SQLALCHEMY_DATABASE_URI = config_toml['DATABASE_URI']
 
     # flask-jwt-extended配置, JWT_SECRET_KEY默认使用SECRET_KEY
     JWT_COOKIE_SECURE = False  # 若为True, 强制使用https, 生产环境应该开启
@@ -36,7 +27,7 @@ class BaseConfig(object):
     JWT_REFRESH_WITHIN_HOURS = timedelta(hours=0.5)  # 在里到期的多少时间内才会更新token
     JWT_COOKIE_CSRF_PROTECT = False  # 待研究
 
-    # 用户信息要求
+    # 用户信息要求, 可能在model.py和forms.py两个文件里都要用
     USERNAME_MIN_LEN = 2
     USERNAME_MAX_LEN = 128
     PWD_MIN_LEN = 8
@@ -57,6 +48,14 @@ class BaseConfig(object):
     
     # 查询分页配置
     QUERY_LIMIT = 10
+    
+    # RabbitMQ设置
+    AMQP_URI = config_toml['AMQP_URI']
+    
+    # 可用编译器设置
+    AVAILABLE_COMPILERS = {
+        'GCC',
+    }
 
 
 Config = BaseConfig

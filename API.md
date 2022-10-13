@@ -132,3 +132,45 @@ Set-Cookie: access_token_cookie=new_jwt, OK, if password changed
 ```
 401-UNAUTHORIZED
 ```
+
+# Submission
+
+## GET /submissions
+
+获取从s开始的QUERY_LIMIT条submission记录
+
+##### request
+
+```
+GET /submissions?offset=s
+```
+
+##### success
+
+```
+{'submissions': [s1, s2...], 'total_count': n}
+```
+
+### POST /submissions
+
+提交代码
+
+**jwt_required**
+
+##### request
+
+```
+{'problem_id': ..., 'compiler': ..., 'source_code': ...}
+```
+
+##### success
+
+```
+200-OK
+```
+
+##### error
+
+```
+['err_msg', ...]
+```

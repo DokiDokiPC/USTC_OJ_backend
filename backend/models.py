@@ -1,7 +1,6 @@
 from dataclasses import dataclass
 from datetime import datetime
-from pydoc import describe
-from tokenize import String
+from enum import Enum
 
 from backend.config import get_config
 from backend.extensions.db import db
@@ -71,13 +70,18 @@ class PassedProblem(db.Model):
 @dataclass
 class Submission(db.Model):
     id: int = db.Column(db.Integer, primary_key=True)
-    submission_time: datetime = db.Column(db.DateTime, nullable=False)
-    problem_id: int = db.Column(
-        db.Integer, db.ForeignKey('problem.id'), nullable=False,)
-    username: str = db.Column(db.String(80), db.ForeignKey(
-        'user.username'), nullable=False)
-    result: str = db.Column(db.String(20), nullable=False)
+    submission_time: datetime = db.Column(db.DateTime, nullable=False,
+                                          default=datetime.utcnow)
+    username: str = db.Column(db.String(80), db.ForeignKey('user.username'),
+                              nullable=False)
+    problem_id: int = db.Column(db.Integer, db.ForeignKey('problem.id'),
+                                nullable=False,)
+    compiler: str = db.Column(db.String(80), nullable=False)  # 隐含了语言信息
+    status: int = db.Column(db.Integer, nullable=False)
     # time_cost ms
     time_cost: int = db.Column(db.Integer)
     # memory_cost KB
     memory_cost: int = db.Column(db.Integer)
+    
+class SubmissionStatus(Enum):
+    COMPILING: int = 0

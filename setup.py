@@ -17,5 +17,6 @@ setup(
         'toml',
         'WTForms',
         'email-validator',
+        'pika',
     ]
 )

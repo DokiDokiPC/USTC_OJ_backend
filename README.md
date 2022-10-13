@@ -2,14 +2,11 @@
 
 ### 创建您的数据库配置
 
-在backend文件夹下创建文件database_config.toml，并依照以下样例填入你的数据库配置
+在backend文件夹下创建文件config.toml，并依照以下样例填入你的数据库和RabbitMQ配置
 
 ```text
-USERNAME = "root"
-HOSTNAME = "127.0.0.1"
-DATABASE_NAME = "ustcoj"
-PASSWORD = "123456"
-PORT = "3306"
+DATABASE_URI = "mysql+pymysql://root:1234@localhost:3306/ustcoj"
+AMQP_URI = "amqp://guest:guest@localhost:5672/%2F?connection_attempts=3&heartbeat=3600"
 ```
 
 ### 自动创建表格

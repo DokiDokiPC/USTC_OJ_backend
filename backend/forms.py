@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField
+from wtforms import StringField, IntegerField
 from wtforms.validators import DataRequired, Length, Email, Regexp
 
 from backend.config import get_config
@@ -30,4 +30,17 @@ class RegisterForm(LoginForm):
     email = StringField('Email', validators=[
         DataRequired('Email can not be blank'),
         Email('Email format error')
+    ])
+
+
+class SubmissionForm(FlaskForm):
+    problem_id = IntegerField('Problem ID', validators=[
+        DataRequired('Problem ID can not be blank')
+    ])
+    compiler = StringField('Compiler', validators=[
+        DataRequired('Compiler can not be blank')
+    ])
+    source_code = StringField('Source code', validators=[
+        DataRequired('Source code can not be blank'),
+        Length(max=2**18, message='Source code size should be within 256KB')
     ])

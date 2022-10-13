@@ -31,7 +31,7 @@ def get_problem_detail(problem_id):
 
 
 def problem_already_exist(problem_id: int) -> bool:
-    return Problem.query.filter_by(id=problem_id).first() != None
+    return Problem.query.filter_by(id=problem_id).first() is not None
 
 
 # 添加问题
@@ -46,7 +46,7 @@ def create_problem():
         db.session.commit()
         return ["Create Success"], HTTPStatus.CREATED
     except SQLAlchemyError:
-        return ['SQLAlchemyError'], HTTPStatus.NOT_ACCEPTABLE
+        return ['SQLAlchemyError'], HTTPStatus.BAD_REQUEST
 
 
 # 修改问题
@@ -60,7 +60,7 @@ def change_problem(problem_id):
         db.session.commit()
         return ["Change Success"], HTTPStatus.OK
     except SQLAlchemyError:
-        return ['SQLAlchemyError'], HTTPStatus.NOT_ACCEPTABLE
+        return ['SQLAlchemyError'], HTTPStatus.BAD_REQUEST
 
 
 # 删除问题
@@ -76,4 +76,4 @@ def delete_problem(problem_id):
         db.session.commit()
         return ["Delete Success"], HTTPStatus.NO_CONTENT
     except SQLAlchemyError:
-        return ['SQLAlchemyError'], HTTPStatus.NOT_ACCEPTABLE
+        return ['SQLAlchemyError'], HTTPStatus.BAD_REQUEST
