@@ -51,6 +51,7 @@ class BaseConfig(object):
     
     # RabbitMQ设置
     AMQP_URI = config_toml['AMQP_URI']
+    QUEUE_NAME = 'judge_request_queue'
     
     # 可用编译器设置
     AVAILABLE_COMPILERS = {

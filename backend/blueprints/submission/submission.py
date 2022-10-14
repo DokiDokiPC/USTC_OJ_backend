@@ -1,28 +1,20 @@
-from multiprocessing import Process, Pipe
+import json
 from http import HTTPStatus
 
 from sqlalchemy.exc import SQLAlchemyError
 from flask import Blueprint, request
 from flask_jwt_extended import jwt_required, get_jwt_identity
+import pika
 
 from backend.extensions.db import db
 from backend.models import Submission, Problem, SubmissionStatus
 from backend.forms import SubmissionForm
 from backend.extensions.db import quick_table_count
 from backend.config import get_config
-from backend.blueprints.submission.publisher import publisher
 
 
 submission_bp = Blueprint('submissions', __name__, url_prefix='/submissions')
 
-available_compilers = get_config('AVAILABLE_COMPILERS')
-
-# 放哪里比较好结束子进程?
-pipe_recv_end, pipe_send_end = Pipe(duplex=False)
-publisher_process = Process(target=publisher, args=(pipe_recv_end,))
-# publisher_process.terminate()
-# publisher_process.join()
-# pipe_send_end.close()
 
 @submission_bp.route('/', methods=['GET'])
 def get_submissions():
@@ -42,7 +34,7 @@ def submit_solution():
         return [err for field in form for err in field.errors], HTTPStatus.BAD_REQUEST
     if not Problem.query.filter_by(id=form.problem_id.data).first():
         return [f'Problem {form.problem_id.data} does not exist'], HTTPStatus.BAD_REQUEST
-    if form.compiler.data not in available_compilers:
+    if form.compiler.data not in get_config('AVAILABLE_COMPILERS'):
         return [f'Compiler {form.compiler.data} is not supported'], HTTPStatus.BAD_REQUEST
     
     # 插入submission记录
@@ -59,11 +51,25 @@ def submit_solution():
         return ['SQLAlchemyError'], HTTPStatus.BAD_REQUEST
     
     # 将判题请求发送至publisher
-    pipe_send_end.send({
+    connection = pika.BlockingConnection(pika.URLParameters(get_config('AMQP_URI')))
+    channel = connection.channel()
+    channel.queue_declare(get_config('QUEUE_NAME'))
+    message = {
         'submission_id': new_submission.id,
         'username': get_jwt_identity(),
         'problem_id': form.problem_id.data,
         'compiler': form.compiler.data,
         'source_code': form.source_code.data
-    })
+    }
+    channel.basic_publish(
+        exchange='',
+        routing_key=get_config('QUEUE_NAME'),
+        body=json.dumps(message, ensure_ascii=False),
+        properties=pika.BasicProperties(
+            content_type='application/json',
+            delivery_mode=pika.DeliveryMode.Transient
+        )
+    )
+    connection.close()
+    
     return '', HTTPStatus.OK
