@@ -18,7 +18,7 @@ problem_bp = Blueprint('problem', __name__, url_prefix='/problems')
 def get_problems():
     offset = request.args.get('offset', 0, type=int)
     return {
-        'problems': Problem.query.offset(offset).limit(get_config('QUERY_LIMIT')).all(),
+        'problems': Problem.query.with_entities(Problem.id, Problem.title, Problem.level, Problem.ac_num).offset(offset).limit(get_config('QUERY_LIMIT')).all(),
         'total_count': quick_table_count(Problem),
         'page_size': get_config('QUERY_LIMIT')
     }
@@ -64,7 +64,7 @@ def change_problem(problem_id):
 
 
 # 删除问题
-@problem_bp.route('/<int:problem_id>', methods=['PUT'])
+@problem_bp.route('/<int:problem_id>', methods=['DELETE'])
 def delete_problem(problem_id):
     if problem_already_exist(problem_id):
         pass
@@ -77,3 +77,12 @@ def delete_problem(problem_id):
         return ["Delete Success"], HTTPStatus.NO_CONTENT
     except SQLAlchemyError:
         return ['SQLAlchemyError'], HTTPStatus.BAD_REQUEST
+
+
+# 按照名称搜索问题
+@problem_bp.route('/search', methods=['POST'])
+def search_problem():
+    data = request.get_json()
+    title_str = data['title']
+    return_problems = Problem.query.filter(Problem.title.contains(title_str))
+    return return_problems, HTTPStatus.OK
