@@ -67,6 +67,18 @@ class PassedProblem(db.Model):
         db.Integer, db.ForeignKey('problem.id'), primary_key=True)
 
 
+class SubmissionStatus(Enum):
+    Waiting = 'Waiting'
+    Compiling = 'Compiling'
+    CompileError = 'CompileError'
+    Running = 'Running'
+    Accepted = 'Accepted'
+    RuntimeError = 'RuntimeError'
+    TimeLimitExceeded = 'TimeLimitExceeded'
+    MemoryLimitExceeded = 'MemoryLimitExceeded'
+    WrongAnswer = 'WrongAnswer'
+
+
 @dataclass
 class Submission(db.Model):
     id: int = db.Column(db.Integer, primary_key=True)
@@ -77,11 +89,8 @@ class Submission(db.Model):
     problem_id: int = db.Column(db.Integer, db.ForeignKey('problem.id'),
                                 nullable=False,)
     compiler: str = db.Column(db.String(80), nullable=False)  # 隐含了语言信息
-    status: int = db.Column(db.Integer, nullable=False)
+    status: int = db.Column(db.Enum(SubmissionStatus), nullable=False)
     # time_cost ms
     time_cost: int = db.Column(db.Integer)
     # memory_cost KB
     memory_cost: int = db.Column(db.Integer)
-    
-class SubmissionStatus(Enum):
-    COMPILING: int = 0

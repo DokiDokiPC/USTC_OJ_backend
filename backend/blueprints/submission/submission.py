@@ -6,10 +6,10 @@ from flask import Blueprint, request
 from flask_jwt_extended import jwt_required, get_jwt_identity
 import pika
 
-from backend.extensions.db import db
+from backend.extensions.db import db, quick_table_count
+from backend.extensions import mq
 from backend.models import Submission, Problem, SubmissionStatus
 from backend.forms import SubmissionForm
-from backend.extensions.db import quick_table_count
 from backend.config import get_config
 
 
@@ -26,7 +26,7 @@ def get_submissions():
 
 
 @submission_bp.route('/', methods=['POST'])
-@jwt_required
+@jwt_required()
 def submit_solution():
     form = SubmissionForm()
     if not form.validate_on_submit():
@@ -42,7 +42,7 @@ def submit_solution():
         username=get_jwt_identity(),
         problem_id=form.problem_id.data,
         compiler=form.compiler.data,
-        status=SubmissionStatus.COMPILING
+        status=SubmissionStatus.Waiting
     )
     try:
         db.session.add(new_submission)
@@ -51,17 +51,13 @@ def submit_solution():
         return ['SQLAlchemyError'], HTTPStatus.BAD_REQUEST
     
     # 将判题请求发送至publisher
-    connection = pika.BlockingConnection(pika.URLParameters(get_config('AMQP_URI')))
-    channel = connection.channel()
-    channel.queue_declare(get_config('QUEUE_NAME'))
     message = {
         'submission_id': new_submission.id,
-        'username': get_jwt_identity(),
         'problem_id': form.problem_id.data,
         'compiler': form.compiler.data,
         'source_code': form.source_code.data
     }
-    channel.basic_publish(
+    mq.channel.basic_publish(
         exchange='',
         routing_key=get_config('QUEUE_NAME'),
         body=json.dumps(message, ensure_ascii=False),
@@ -70,6 +66,5 @@ def submit_solution():
             delivery_mode=pika.DeliveryMode.Transient
         )
     )
-    connection.close()
     
     return '', HTTPStatus.OK

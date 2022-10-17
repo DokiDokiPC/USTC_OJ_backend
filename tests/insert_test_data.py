@@ -1,10 +1,11 @@
-from backend.models import *
-from backend.config import Config
 import sys
 from pathlib import Path
 
 from argon2 import PasswordHasher
 from flask import Flask
+
+from backend.models import *
+from backend.config import Config
 
 sys.path.append(str(Path(__file__).parent.parent))
 
@@ -37,9 +38,10 @@ with app.app_context():
     db.session.add(Submission(
         **{
             'submission_time': "2022-3-1",
-            'problem_id': "1001",
             'username': "Nyan",
-            'result': "Accepted",
+            'problem_id': "1001",
+            'compiler': 'GCC',
+            'status': SubmissionStatus.Waiting,
             'time_cost': "10",
             'memory_cost': "30"
         }
@@ -48,9 +50,10 @@ with app.app_context():
     db.session.add(Submission(
         **{
             'submission_time': "2022-3-1",
-            'problem_id': "1002",
             'username': "Nyan",
-            'result': "Compile Error",
+            'problem_id': "1002",
+            'compiler': "GCC",
+            'status': SubmissionStatus.Waiting,
             'time_cost': None,
             'memory_cost': None
         }
