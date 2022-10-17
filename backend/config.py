@@ -8,7 +8,7 @@ def get_hashed_password_len():
     ph = PasswordHasher()
     return len(ph.hash(''))
 
-config_toml = toml.load((Path(__file__).parent / 'config.toml').resolve())
+config_toml = toml.load(str((Path(__file__).parent / 'config.toml').resolve()))
 
 
 class BaseConfig(object):
@@ -54,9 +54,7 @@ class BaseConfig(object):
     QUEUE_NAME = 'judge_request_queue'
     
     # 可用编译器设置
-    AVAILABLE_COMPILERS = {
-        'GCC',
-    }
+    AVAILABLE_COMPILERS = {'GCC', 'G++'}
 
 
 Config = BaseConfig

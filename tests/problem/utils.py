@@ -1,7 +1,13 @@
-from dict_to_str import dict2str
 from read_url import url
 import os
 
+
+def dict2str(d: dict) -> str:
+    s = ""
+    for k in d:
+        s += " "
+        s += f"{k}={d[k]}"
+    return s
 
 def post(subname, s):
     os.system("http POST "+url()+subname + " " + s)
