@@ -1,6 +1,5 @@
 from dataclasses import dataclass
 from datetime import datetime
-from enum import Enum
 
 from backend.config import get_config
 from backend.extensions.db import db
@@ -24,14 +23,14 @@ class Problem(db.Model):
     memory_limit: int = db.Column(db.Integer, nullable=False)
     # 样例存在 data/Problems/<id>/examples/<example_id>.txt中
     # 其他测试用例存在 data/Problems/<id>/tests/<test_id>.txt中
-
+    
     # 下列属性已废弃
     # 样例路径
     # example_path: str = db.Column(db.String(120), nullable=False)
     # 所有测试用例路径
     # tests_path: str = db.Column(db.String(120), nullable=False)
 
-                                                                        
+
 @dataclass
 class Contest(db.Model):
     id: int = db.Column(db.Integer, primary_key=True)
@@ -67,11 +66,14 @@ class PassedProblem(db.Model):
         db.Integer, db.ForeignKey('problem.id'), primary_key=True)
 
 
-class SubmissionStatus(Enum):
+class SubmissionStatus:
+    # 初始状态
     Waiting = 'Waiting'
+    # 中间状态, 可用可不用
     Compiling = 'Compiling'
-    CompileError = 'CompileError'
     Running = 'Running'
+    # 结束状态
+    CompileError = 'CompileError'
     Accepted = 'Accepted'
     RuntimeError = 'RuntimeError'
     TimeLimitExceeded = 'TimeLimitExceeded'
@@ -87,9 +89,9 @@ class Submission(db.Model):
     username: str = db.Column(db.String(80), db.ForeignKey('user.username'),
                               nullable=False)
     problem_id: int = db.Column(db.Integer, db.ForeignKey('problem.id'),
-                                nullable=False,)
+                                nullable=False, )
     compiler: str = db.Column(db.String(80), nullable=False)  # 隐含了语言信息
-    status: int = db.Column(db.Enum(SubmissionStatus), nullable=False)
+    status: str = db.Column(db.String(80), nullable=False)
     # time_cost ms
     time_cost: int = db.Column(db.Integer)
     # memory_cost KB

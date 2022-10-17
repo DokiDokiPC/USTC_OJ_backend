@@ -14,6 +14,7 @@ setup(
         'Flask_WTF',
         'setuptools',
         'SQLAlchemy',
+        'pymysql',
         'toml',
         'WTForms',
         'email-validator',
