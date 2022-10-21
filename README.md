@@ -5,7 +5,7 @@
 在backend文件夹下创建文件config.toml，并依照以下样例填入你的数据库和RabbitMQ配置
 
 ```text
-DATABASE_URI = "mysql+pymysql://root:1234@localhost:3306/ustcoj"
+DATABASE_URI = "mysql+pymysql://root:1234@localhost:3306/ustcoj?charset=utfmb4"
 AMQP_URI = "amqp://guest:guest@localhost:5672/%2F?connection_attempts=3&heartbeat=3600"
 ```
 

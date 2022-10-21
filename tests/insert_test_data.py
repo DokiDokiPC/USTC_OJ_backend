@@ -1,14 +1,8 @@
-import sys
-from pathlib import Path
-
 from argon2 import PasswordHasher
 from flask import Flask
 
 from backend.models import *
 from backend.config import Config
-
-sys.path.append(str(Path(__file__).parent.parent))
-
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -26,10 +20,9 @@ with app.app_context():
                                ))
 
     ph = PasswordHasher()
-    db.session.add(User(username='Nyan', password=ph.hash('1111111a'),
-                        email='aaa@aaa.com'))
-    db.session.add(User(username='admin', password=ph.hash('1111111a'),
-                        email='admin@mail.com', is_admin=True))
+    db.session.add(User(username='admin', password=ph.hash('1111111a'), email='admin@mail.com', is_admin=True))
+    db.session.add(User(username='Nyan', password=ph.hash('1111111a'), email='aaa@aaa.com'))
+    db.session.add(User(username='Tanix', password=ph.hash('1111111a'), email='tanix@tanix.com'))
 
     db.session.commit()
 

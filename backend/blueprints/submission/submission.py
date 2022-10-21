@@ -8,7 +8,7 @@ import pika
 
 from backend.extensions.db import db, quick_table_count
 from backend.extensions import mq
-from backend.models import Submission, Problem, SubmissionStatus
+from backend.models import Submission, Problem, SubmissionStatus, Compilers
 from backend.forms import SubmissionForm
 from backend.config import get_config
 
@@ -34,7 +34,7 @@ def submit_solution():
         return [err for field in form for err in field.errors], HTTPStatus.BAD_REQUEST
     if not Problem.query.filter_by(id=form.problem_id.data).first():
         return [f'Problem {form.problem_id.data} does not exist'], HTTPStatus.BAD_REQUEST
-    if form.compiler.data not in get_config('AVAILABLE_COMPILERS'):
+    if getattr(Compilers, form.compiler.data, None) is None:
         return [f'Compiler {form.compiler.data} is not supported'], HTTPStatus.BAD_REQUEST
     
     # 插入submission记录

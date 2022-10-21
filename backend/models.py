@@ -5,24 +5,30 @@ from backend.config import get_config
 from backend.extensions.db import db
 
 
+class ProblemLevel:
+    Easy = 'Easy'
+    Middle = 'Middle'
+    Hard = 'Hard'
+
+
 @dataclass
 class Problem(db.Model):
-    id: int = db.Column(db.Integer, primary_key=True)
-    name: str = db.Column(db.String(80), nullable=False)
-    level: str = db.Column(db.String(20), nullable=False)
+    id: int = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    name: str = db.Column(db.Unicode(80), nullable=False)
+    level: str = db.Column(db.String(20), nullable=False, default=ProblemLevel.Easy)
     ac_num: int = db.Column(db.Integer, nullable=False, default=0)
     submit_num: int = db.Column(db.Integer, nullable=False, default=0)
     # 一段markdown文本, 包含题目描述, 输入输出格式, 样例等内容
-    description: str = db.Column(db.Unicode(8000), nullable=False)
+    description: str = db.Column(db.UnicodeText, nullable=False, default='')
     # 时间空间限制
-    time_limit: int = db.Column(db.Integer, nullable=False)  # ms
-    memory_limit: int = db.Column(db.Integer, nullable=False)  # KB
+    time_limit: int = db.Column(db.Integer, nullable=False, default=1000)  # ms
+    memory_limit: int = db.Column(db.Integer, nullable=False, default=10240)  # KB
 
 
 @dataclass
 class Contest(db.Model):
-    id: int = db.Column(db.Integer, primary_key=True)
-    name: str = db.Column(db.String(80), nullable=False)
+    id: int = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    name: str = db.Column(db.Unicode(80), nullable=False)
     start_time: datetime = db.Column(db.DateTime, nullable=False)
     end_time: datetime = db.Column(db.DateTime, nullable=False)
 
@@ -60,13 +66,18 @@ class SubmissionStatus:
     Accepted = 'Accepted'
 
 
+class Compilers:
+    GCC = 'GCC'
+    GPP = 'GPP'
+
+
 @dataclass
 class Submission(db.Model):
-    id: int = db.Column(db.Integer, primary_key=True)
+    id: int = db.Column(db.Integer, primary_key=True, autoincrement=True)
     submission_time: datetime = db.Column(db.DateTime, nullable=False, default=datetime.now)
     username: str = db.Column(db.String(80), db.ForeignKey('user.username'), nullable=False)
     problem_id: int = db.Column(db.Integer, db.ForeignKey('problem.id'), nullable=False)
-    compiler: str = db.Column(db.String(80), nullable=False)  # 隐含了语言信息, 可用编译器在config.py设置
-    status: str = db.Column(db.String(80), nullable=False)
+    compiler: str = db.Column(db.String(80), nullable=False, default=Compilers.GCC)  # 隐含了语言信息, 可用编译器在Compilers设置
+    status: str = db.Column(db.String(80), nullable=False, default=SubmissionStatus.Waiting)
     time_cost: int = db.Column(db.Integer)  # ms
     memory_cost: int = db.Column(db.Integer)  # KB
