@@ -54,6 +54,7 @@ def submit_solution():
     message = {
         'submission_id': new_submission.id,
         'problem_id': form.problem_id.data,
+        'username': get_jwt_identity(),
         'compiler': form.compiler.data,
         'source_code': form.source_code.data
     }

@@ -16,7 +16,7 @@ problem_bp = Blueprint('problem', __name__, url_prefix='/problems')
 @problem_bp.route('/', methods=['GET'])
 def get_problems():
     offset = request.args.get('offset', 0, type=int)
-    info = get_some_rows(Problem, [Problem.id, Problem.title, Problem.level,
+    info = get_some_rows(Problem, [Problem.id, Problem.name, Problem.level,
                          Problem.ac_num, Problem.submit_num], offset, get_config("QUERY_LIMIT"))
     # print(info)
     return {
@@ -85,6 +85,6 @@ def delete_problem(problem_id):
 @problem_bp.route('/search', methods=['POST'])
 def search_problem():
     data = request.get_json()
-    title_str = data['title']
-    return_problems = Problem.query.filter(Problem.title.contains(title_str))
+    name_str = data['name']
+    return_problems = Problem.query.filter(Problem.name.contains(name_str))
     return return_problems, HTTPStatus.OK

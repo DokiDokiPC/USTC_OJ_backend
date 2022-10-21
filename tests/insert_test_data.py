@@ -16,15 +16,13 @@ db.init_app(app)
 with app.app_context():
     for i in range(1001, 2001):
         db.session.add(Problem(id=i,
-                               title=f'A+B问题@{i}',
+                               name=f'A+B问题@{i}',
                                level='Easy',
                                ac_num=2,
                                submit_num=10,
                                description="输入两个数字a和b，输出a+b",
-                               input_description="两个数字 由空格分割 每行一组",
-                               output_description="一个数字 为输入的两个数字的和 每行一组",
-                               time_limit=1000,
-                               memory_limit=10,
+                               time_limit=1000,  # ms
+                               memory_limit=10240,  # KB
                                ))
 
     ph = PasswordHasher()
@@ -49,13 +47,12 @@ with app.app_context():
 
     db.session.add(Submission(
         **{
-            'submission_time': "2022-3-1",
             'username': "Nyan",
             'problem_id': "1002",
             'compiler': "GCC",
-            'status': SubmissionStatus.Waiting,
-            'time_cost': None,
-            'memory_cost': None
+            'status': SubmissionStatus.Accepted,
+            'time_cost': 100,
+            'memory_cost': 5000
         }
     ))
 
