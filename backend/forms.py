@@ -1,6 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, IntegerField
 from wtforms.validators import DataRequired, Length, Email, Regexp
+from wtforms.widgets import PasswordInput
 
 from backend.config import get_config
 
@@ -14,7 +15,7 @@ class UpdateForm(FlaskForm):
         Regexp(r'\S+$', message='Password can not contain whitespace characters'),
         Regexp(r'.*[0-9]', message='Password should contain at least 1 number'),
         Regexp(r'.*[a-zA-Z]', message='Password should contain at least 1 letter'),
-    ])
+    ], widget=PasswordInput(hide_value=False))
 
 
 class LoginForm(UpdateForm):

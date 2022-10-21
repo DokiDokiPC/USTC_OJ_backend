@@ -5,25 +5,31 @@
     <title>Admin Login</title>
 </head>
 <body>
-    <ul id="errs_list" hidden></ul>
-    <form>
-        {{ form.username.label }} {{ form.username(size=20) }} <br>
-        {{ form.password.label }} {{ form.password(size=20) }} <br>
-        <input type="button" value="登录" onclick="login()">
-    </form>
+    <div style="width: 400px; margin: 0 auto">
+        <ul id="errs_list" hidden></ul>
+        <form style="margin-left: 40px">
+            {{ form.username.label }} <br>
+            {{ form.username(size=20) }} <br>
+            {{ form.password.label }} <br>
+            {{ form.password(size=20) }} <br>
+            <input type="button" value="登录" onclick="login()">
+        </form>
+    </div>
 </body>
 <script>
     async function login() {
+        // 获取form并检验是否合法
         const form = document.forms[0];
         if(!form.reportValidity()) return;
+        // 尝试获取token
         const res = await fetch("{{ url_for('token.get_token') }}", {
             method: "post",
             credentials: "same-origin",
             body: new FormData(form)
         });
-        console.log(res.url)
-        if (res.ok) window.location.href = "{{ url_for('admin_user.index_view') }}";
+        if (res.ok) window.location.href = "{{ url_for('admin_user.index_view') }}";  // 成功获取token
         else {
+            // 获取tokne失败, 将返回的原因列出来
             const ul = document.getElementById("errs_list");
             ul.innerHTML = "";
             ul.hidden = false;
@@ -34,6 +40,15 @@
                 ul.appendChild(li);
             }
         }
+    }
+    // 为username和password输入框绑定enter事件
+    for (id of ["username", "password"]) {
+        document.getElementById(id).addEventListener("keypress", event => {
+            if (event.key === "Enter") {
+                event.preventDefault();
+                login();
+            }
+        });
     }
 </script>
 </html>
