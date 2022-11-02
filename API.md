@@ -119,12 +119,13 @@ Set-Cookie: access_token_cookie=new_jwt, OK, if password changed
 
 ### HEAD /tokens
 
-测试是否登录
+测试是否登录，若成功通过header返回username
 
 ##### success
 
 ```
 200-OK
+headers['username'] = username
 ```
 
 ##### error

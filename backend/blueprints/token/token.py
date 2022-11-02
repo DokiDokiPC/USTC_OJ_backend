@@ -60,8 +60,11 @@ def delete_token():
     return response
 
 
-# 测试jwt是否有效, 如果没有或者无效, 会返回401-UNAUTHORIZED
+# 测试jwt是否有效, 如果没有或者无效, 会返回401-UNAUTHORIZED, 成功则通过header返回username
 @token_bp.route('/', methods=['HEAD'])
 @jwt_required()
 def test_token():
-    return '', HTTPStatus.OK
+    resp = make_response()
+    resp.headers['Access-Control-Expose-Headers'] = 'username'
+    resp.headers['username'] = get_jwt_identity()
+    return resp
