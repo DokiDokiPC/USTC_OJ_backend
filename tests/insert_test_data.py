@@ -37,16 +37,28 @@ with app.app_context():
             'memory_cost': "30"
         }
     ))
-
     db.session.add(Submission(
         **{
+            'submission_time': "2022-3-1",
             'username': "Nyan",
-            'problem_id': "1002",
-            'compiler': "GCC",
-            'status': SubmissionStatus.Accepted,
-            'time_cost': 100,
-            'memory_cost': 5000
+            'problem_id': "1001",
+            'compiler': 'GCC',
+            'status': SubmissionStatus.WrongAnswer,
+            'time_cost': "10",
+            'memory_cost': "30"
         }
     ))
+
+    for i in range(1000):
+        db.session.add(Submission(
+            **{
+                'username': "Nyan",
+                'problem_id': "1002",
+                'compiler': "GCC",
+                'status': SubmissionStatus.Accepted,
+                'time_cost': 100,
+                'memory_cost': 5000
+            }
+        ))
 
     db.session.commit()

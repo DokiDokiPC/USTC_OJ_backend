@@ -21,7 +21,8 @@ def get_submissions():
     offset = request.args.get('offset', 0, type=int)
     return {
         'submissions': Submission.query.offset(offset).limit(get_config('QUERY_LIMIT')).all(),
-        'total_count': quick_table_count(Submission)
+        'total_count': quick_table_count(Submission),
+        'page_size': get_config('QUERY_LIMIT')
     }
 
 
