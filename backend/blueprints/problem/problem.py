@@ -16,9 +16,9 @@ problem_bp = Blueprint('problem', __name__, url_prefix='/problems')
 @problem_bp.route('/', methods=['GET'])
 def get_problems():
     offset = request.args.get('offset', 0, type=int)
-    info = get_some_rows(Problem, [Problem.id, Problem.name, Problem.level,
-                         Problem.ac_num, Problem.submit_num], offset, get_config("QUERY_LIMIT"))
-    # print(info)
+    info = get_some_rows(Problem, [
+                         "id", "name", "level", "ac_num", "submit_num"], offset, get_config("QUERY_LIMIT"))
+    print(info)
     return {
         'problems': info,
         'total_count': quick_table_count(Problem),

@@ -9,6 +9,9 @@ def dict2str(d: dict) -> str:
         s += f"{k}={d[k]}"
     return s
 
+def get(subname):
+    os.system("http GET "+url()+subname)
+
 def post(subname, s):
     os.system("http POST "+url()+subname + " " + s)
 
