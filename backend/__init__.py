@@ -3,7 +3,7 @@ def create_app():
     from flask import Flask
 
     from backend.config import Config
-    from backend.extensions import admin, jwt, cors, mq
+    from backend.extensions import jwt, cors, mq
     from backend import database
     from backend.blueprints import user_bp, token_bp, problem_bp, submission_bp
     # 初始化应用
@@ -11,7 +11,7 @@ def create_app():
     # 配置应用
     app.config.from_object(Config)
     # 注册插件
-    admin.init_app(app)
+    # admin.init_app(app)
     jwt.init_app(app)
     cors.init_app(app)
     mq.init_app(app)

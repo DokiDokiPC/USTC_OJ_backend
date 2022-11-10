@@ -81,7 +81,7 @@ def update_user(username):
             # 如果更改了密码, 重新设置access_token_cookie
             access_token = create_access_token(identity=current_user.username)
             set_access_cookies(response, access_token)
-        return response, HTTPStatus.OK
+        return response
     except SQLAlchemyError:
         return ['SQLAlchemyError'], HTTPStatus.BAD_REQUEST
 

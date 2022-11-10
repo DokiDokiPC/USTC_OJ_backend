@@ -1,5 +1,11 @@
 # USTC_OJ_backend
 
+### 安装
+
+```bash
+pip install -e .
+```
+
 ### 创建您的数据库配置
 
 在backend文件夹下创建文件config.toml，并依照以下样例填入你的数据库和RabbitMQ配置
@@ -16,13 +22,12 @@ AMQP_URI = "amqp://guest:guest@localhost:5672/%2F?connection_attempts=3&heartbea
 表格创建方法：
 
 ```bash
-python tests/init.py
+python tests/init_data.py
 ```
 
 ### 使用
 
 ```bash
-pip install -r requirements.txt
 python run.py
 ```
 

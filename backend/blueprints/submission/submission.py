@@ -75,4 +75,4 @@ def submit_solution():
         )
     )
 
-    return '', HTTPStatus.OK
+    return ''

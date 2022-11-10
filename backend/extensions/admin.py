@@ -1,6 +1,7 @@
+from sqlalchemy import select
 from flask_admin import Admin, AdminIndexView, expose
 from flask_admin.contrib.sqla import ModelView
-from flask_jwt_extended import jwt_required, get_current_user
+from flask_jwt_extended import jwt_required, get_jwt_identity
 
 from backend.models import User, Problem, ProblemLevel, Submission, SubmissionStatus
 from backend.database import Session
@@ -24,8 +25,8 @@ class AdminView(ModelView):
 
     @jwt_required()
     def is_accessible(self):
-        current_user = get_current_user()
-        return current_user and current_user.is_admin
+        username = get_jwt_identity()
+        return Session.scalar(select(User.is_admin).filter(User.username == username))
 
 
 class UserAdminView(AdminView):

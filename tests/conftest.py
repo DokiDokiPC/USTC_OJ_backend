@@ -5,14 +5,31 @@ from backend import create_app
 
 @pytest.fixture()
 def app():
+    print('app fixture')
     app = create_app()
-    app.config.update({'TESTING': True})
+    app.testing = True
     yield app
+
 
 @pytest.fixture()
 def client(app):
-    return app.test_client()
+    yield app.test_client()
+
+
+@pytest.fixture()
+def login_client(app):
+    login_client = app.test_client()
+    login_client.post('/tokens/', data={'username': 'Tanix', 'password': '1111111a'})
+    yield login_client
+
+
+@pytest.fixture()
+def admin_client(app):
+    admin_client = app.test_client()
+    admin_client.post('/tokens/', data={'username': 'admin', 'password': '1111111a'})
+    yield admin_client
+
 
 @pytest.fixture()
 def runner(app):
-    return app.test_cli_runner()
+    yield app.test_cli_runner()
