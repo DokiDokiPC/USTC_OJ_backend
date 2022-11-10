@@ -3,7 +3,7 @@ from flask_admin.contrib.sqla import ModelView
 from flask_jwt_extended import jwt_required, get_current_user
 
 from backend.models import User, Problem, ProblemLevel, Submission, SubmissionStatus
-from backend.extensions.db import db
+from backend.database import Session
 from backend.forms import LoginForm
 
 
@@ -16,7 +16,7 @@ class HomeView(AdminIndexView):
 
 class AdminView(ModelView):
     page_size = 10
-    
+
     def __init__(self, model, *args, **kwargs):
         self.column_list = [c.key for c in model.__table__.columns]
         self.column_sortable_list = self.column_list
@@ -24,7 +24,8 @@ class AdminView(ModelView):
 
     @jwt_required()
     def is_accessible(self):
-        return get_current_user() and get_current_user().is_admin
+        current_user = get_current_user()
+        return current_user and current_user.is_admin
 
 
 class UserAdminView(AdminView):
@@ -53,6 +54,6 @@ class SubmissionAdminView(AdminView):
 
 
 admin = Admin(name='ustcoj', template_mode='bootstrap3', index_view=HomeView('login'))
-admin.add_view(UserAdminView(User, db.session, name='Users', endpoint='admin_user'))
-admin.add_view(ProblemAdminView(Problem, db.session, name='Problems', endpoint='admin_problem'))
-admin.add_view(SubmissionAdminView(Submission, db.session, name='Submissions', endpoint='admin_submission'))
+admin.add_view(UserAdminView(User, Session, name='Users', endpoint='admin_user'))
+admin.add_view(ProblemAdminView(Problem, Session, name='Problems', endpoint='admin_problem'))
+admin.add_view(SubmissionAdminView(Submission, Session, name='Submissions', endpoint='admin_submission'))

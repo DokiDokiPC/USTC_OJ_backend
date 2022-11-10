@@ -1,13 +1,14 @@
 from http import HTTPStatus
 
 from flask import Blueprint, request
+from sqlalchemy import func, select
+from sqlalchemy.orm import load_only
 from sqlalchemy.exc import SQLAlchemyError
 
-from backend.config import get_config
-from backend.extensions.db import db
-from backend.extensions.db import quick_table_count
+from backend.config import Config
+from backend.database import Session
 from backend.models import Problem
-from backend.utils import get_some_rows
+from backend.forms import ProblemForm
 
 problem_bp = Blueprint('problem', __name__, url_prefix='/problems')
 
@@ -16,37 +17,38 @@ problem_bp = Blueprint('problem', __name__, url_prefix='/problems')
 @problem_bp.route('/', methods=['GET'])
 def get_problems():
     offset = request.args.get('offset', 0, type=int)
-    info = get_some_rows(Problem, [
-                         "id", "name", "level", "ac_num", "submit_num"], offset, get_config("QUERY_LIMIT"))
-    print(info)
+    name = request.args.get('name', None)
+    stmt = (
+        select(Problem)
+        .options(load_only(Problem.id, Problem.name, Problem.level, Problem.ac_num, Problem.submit_num))
+        .offset(offset)
+        .limit(Config.QUERY_LIMIT)
+    )
+    if name is not None:
+        stmt = stmt.filter(Problem.name.contains(name))
     return {
-        'problems': info,
-        'total_count': quick_table_count(Problem),
-        'page_size': get_config('QUERY_LIMIT')
+        'problems': Session.scalars(stmt).all(),
+        'total_count': Session.scalar(select(func.count('*')).select_from(Problem)),
+        'page_size': Config.QUERY_LIMIT
     }
 
 
 # 获取问题详情
 @problem_bp.route('/<int:problem_id>', methods=['GET'])
 def get_problem_detail(problem_id):
-    return Problem.query.filter_by(id=problem_id).all()
-
-
-def problem_already_exist(problem_id: int) -> bool:
-    return Problem.query.filter_by(id=problem_id).first() is not None
+    return [Session.get(Problem, problem_id)]
 
 
 # 添加问题
 @problem_bp.route('/', methods=['POST'])
 def create_problem():
-    data = request.get_json()
-    new_problem = Problem(**data)
-    if problem_already_exist(new_problem.id):
-        return [f"Problem ID {new_problem.id} already exists"], HTTPStatus.CONFLICT
+    form = ProblemForm()
+    new_problem = Problem()
+    form.populate_obj(new_problem)
     try:
-        db.session.add(new_problem)
-        db.session.commit()
-        return ["Create Success"], HTTPStatus.CREATED
+        Session.add(new_problem)
+        Session.commit()
+        return '', HTTPStatus.CREATED
     except SQLAlchemyError:
         return ['SQLAlchemyError'], HTTPStatus.BAD_REQUEST
 
@@ -54,13 +56,12 @@ def create_problem():
 # 修改问题
 @problem_bp.route('/<int:problem_id>', methods=['PUT'])
 def change_problem(problem_id):
-    data = request.get_json()
-    new_problem = Problem(**data)
-    now_problem = Problem.query().get(problem_id)
+    form = ProblemForm()
+    problem = Session.get(Problem, problem_id)
+    form.populate_obj(problem)
     try:
-        now_problem.__dict__.update(new_problem.__dict__)
-        db.session.commit()
-        return ["Change Success"], HTTPStatus.OK
+        Session.commit()
+        return '', HTTPStatus.OK
     except SQLAlchemyError:
         return ['SQLAlchemyError'], HTTPStatus.BAD_REQUEST
 
@@ -68,23 +69,12 @@ def change_problem(problem_id):
 # 删除问题
 @problem_bp.route('/<int:problem_id>', methods=['DELETE'])
 def delete_problem(problem_id):
-    if problem_already_exist(problem_id):
-        pass
-    else:
-        return [f"cannot find the problem {problem_id} to delete."], HTTPStatus.CONFLICT
-    now_problem = Problem.query().get(problem_id)
+    problem = Session.get(Problem, problem_id)
+    if problem is None:
+        return [f'Problem {problem_id} does not exist.'], HTTPStatus.NO_CONTENT
     try:
-        db.session.delete(now_problem)
-        db.session.commit()
-        return ["Delete Success"], HTTPStatus.NO_CONTENT
+        Session.delete(problem)
+        Session.commit()
+        return '', HTTPStatus.NO_CONTENT
     except SQLAlchemyError:
         return ['SQLAlchemyError'], HTTPStatus.BAD_REQUEST
-
-
-# 按照名称搜索问题
-@problem_bp.route('/search', methods=['POST'])
-def search_problem():
-    data = request.get_json()
-    name_str = data['name']
-    return_problems = Problem.query.filter(Problem.name.contains(name_str))
-    return return_problems, HTTPStatus.OK

@@ -7,9 +7,10 @@ from flask_jwt_extended import get_jwt, create_access_token, get_jwt_identity, s
 from argon2 import PasswordHasher
 from argon2.exceptions import VerifyMismatchError, InvalidHash
 
-from backend.config import get_config
+from backend.config import Config
 from backend.models import User
 from backend.forms import LoginForm
+from backend.database import Session
 
 token_bp = Blueprint('token', __name__, url_prefix='/tokens')
 ph = PasswordHasher()
@@ -21,7 +22,7 @@ def refresh_expiring_jwts(response):
     try:
         exp_timestamp = get_jwt()['exp']
         now = datetime.now(timezone.utc)
-        target_timestamp = datetime.timestamp(now + get_config('JWT_REFRESH_WITHIN_HOURS'))
+        target_timestamp = datetime.timestamp(now + Config.JWT_REFRESH_WITHIN_HOURS)
         if target_timestamp > exp_timestamp:
             access_token = create_access_token(identity=get_jwt_identity())
             set_access_cookies(response, access_token)
@@ -37,8 +38,8 @@ def get_token():
     if not form.validate_on_submit():
         # 返回所有表单验证错误信息
         return [err for field in form for err in field.errors], HTTPStatus.UNAUTHORIZED
-    user = User.query.filter_by(username=form.username.data).first()
-    if not user:
+    user = Session.get(User, form.username.data)
+    if user is None:
         return [f'Username "{form.username.data}" does not exist'], HTTPStatus.UNAUTHORIZED
     try:
         ph.verify(user.password, form.password.data)

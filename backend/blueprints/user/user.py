@@ -7,8 +7,8 @@ from flask_jwt_extended import jwt_required, get_current_user,\
 from argon2 import PasswordHasher
 
 from backend.models import User
-from backend.extensions.db import db
-from backend.forms import RegisterForm, UpdateForm
+from backend.database import Session
+from backend.forms import RegisterForm, UserUpdateForm
 
 user_bp = Blueprint('user', __name__, url_prefix='/users')
 ph = PasswordHasher()
@@ -35,9 +35,9 @@ def create_user():
     if not form.validate_on_submit():
         # 返回所有表单验证错误信息
         return [err for field in form for err in field.errors], HTTPStatus.BAD_REQUEST
-    if User.query.filter_by(username=form.username.data).first():
+    if Session.get(User, form.username.data) is not None:
         return [f'Username "{form.username.data}" already exists'], HTTPStatus.CONFLICT
-    if User.query.filter_by(email=form.email.data).first():
+    if Session.get(User, {'email': form.email.data}) is not None:
         return [f'Email {form.email.data} already exists'], HTTPStatus.CONFLICT
     new_user = User(
         username=form.username.data,
@@ -45,8 +45,8 @@ def create_user():
         email=form.email.data
     )
     try:
-        db.session.add(new_user)
-        db.session.commit()
+        Session.add(new_user)
+        Session.commit()
         # 创建成功了也返回一个JWT, 直接登录成功
         response = make_response()
         access_token = create_access_token(identity=form.username.data)
@@ -60,12 +60,12 @@ def create_user():
 @user_bp.route('/<string:username>', methods=['PUT'])
 @jwt_required()
 def update_user(username):
-    form = UpdateForm()
+    form = UserUpdateForm()
     if not form.validate_on_submit():
         # 返回所有表单验证错误信息
         return [err for field in form for err in field.errors], HTTPStatus.BAD_REQUEST
     current_user = get_current_user()
-    if not current_user:
+    if current_user is None:
         # 数据库中找不到用户, 可能是删除账号后未删除token
         return ['Your account has been deleted'], HTTPStatus.UNAUTHORIZED
     if current_user.username != username:
@@ -97,8 +97,8 @@ def delete_user(username):
     if current_user.username != username:
         return ['Permission denied'], HTTPStatus.FORBIDDEN
     try:
-        db.session.delete(current_user)
-        db.session.commit()
+        Session.delete(current_user)
+        Session.commit()
         # 删除用户后去除该用户的jwt
         response = make_response()
         unset_access_cookies(response)

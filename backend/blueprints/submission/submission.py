@@ -2,15 +2,17 @@ import json
 from http import HTTPStatus
 
 from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy import select, func
+from sqlalchemy.orm import load_only
 from flask import Blueprint, request
 from flask_jwt_extended import jwt_required, get_jwt_identity
 import pika
 
-from backend.extensions.db import db, quick_table_count
+from backend.database import Session
 from backend.extensions import mq
-from backend.models import Submission, Problem, SubmissionStatus, Compilers
+from backend.models import Submission, Problem, SubmissionStatus, SubmissionCompiler
 from backend.forms import SubmissionForm
-from backend.config import get_config
+from backend.config import Config
 
 
 submission_bp = Blueprint('submissions', __name__, url_prefix='/submissions')
@@ -19,10 +21,14 @@ submission_bp = Blueprint('submissions', __name__, url_prefix='/submissions')
 @submission_bp.route('/', methods=['GET'])
 def get_submissions():
     offset = request.args.get('offset', 0, type=int)
+    stmt = select(Submission).options(load_only(
+        Submission.id, Submission.submission_time, Submission.username, Submission.problem_id, Submission.compiler,
+        Submission.status, Submission.time_cost, Submission.memory_cost
+    )).offset(offset).limit(Config.QUERY_LIMIT)
     return {
-        'submissions': Submission.query.offset(offset).limit(get_config('QUERY_LIMIT')).all(),
-        'total_count': quick_table_count(Submission),
-        'page_size': get_config('QUERY_LIMIT')
+        'submissions': Session.scalars(stmt).all(),
+        'total_count': Session.scalar(select(func.count('*')).select_from(Submission)),
+        'page_size': Config.QUERY_LIMIT
     }
 
 
@@ -33,11 +39,11 @@ def submit_solution():
     if not form.validate_on_submit():
         # 返回所有表单验证错误信息
         return [err for field in form for err in field.errors], HTTPStatus.BAD_REQUEST
-    if not Problem.query.filter_by(id=form.problem_id.data).first():
+    if Session.get(Problem, form.problem_id.data) is None:
         return [f'Problem {form.problem_id.data} does not exist'], HTTPStatus.BAD_REQUEST
-    if getattr(Compilers, form.compiler.data, None) is None:
+    if getattr(SubmissionCompiler, form.compiler.data, None) is None:
         return [f'Compiler {form.compiler.data} is not supported'], HTTPStatus.BAD_REQUEST
-    
+
     # 插入submission记录
     new_submission = Submission(
         username=get_jwt_identity(),
@@ -46,11 +52,11 @@ def submit_solution():
         status=SubmissionStatus.Waiting
     )
     try:
-        db.session.add(new_submission)
-        db.session.commit()
+        Session.add(new_submission)
+        Session.commit()
     except SQLAlchemyError:
         return ['SQLAlchemyError'], HTTPStatus.BAD_REQUEST
-    
+
     # 将判题请求发送至publisher
     message = {
         'submission_id': new_submission.id,
@@ -61,12 +67,12 @@ def submit_solution():
     }
     mq.channel.basic_publish(
         exchange='',
-        routing_key=get_config('QUEUE_NAME'),
+        routing_key=Config.QUEUE_NAME,
         body=json.dumps(message, ensure_ascii=False),
         properties=pika.BasicProperties(
             content_type='application/json',
             delivery_mode=pika.DeliveryMode.Transient
         )
     )
-    
+
     return '', HTTPStatus.OK

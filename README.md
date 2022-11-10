@@ -16,13 +16,13 @@ AMQP_URI = "amqp://guest:guest@localhost:5672/%2F?connection_attempts=3&heartbea
 表格创建方法：
 
 ```bash
-python tests/create_tables.py
+python tests/init.py
 ```
 
 ### 使用
 
 ```bash
-pip install -e .
+pip install -r requirements.txt
 python run.py
 ```
 
