@@ -1,5 +1,5 @@
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, scoped_session, declarative_base
+from sqlalchemy.orm import sessionmaker, scoped_session, DeclarativeBase, MappedAsDataclass
 
 from backend.config import Config
 
@@ -12,7 +12,8 @@ except ImportError:
 
 Session = scoped_session(sessionmaker(engine), scopefunc=_get_ident)
 
-Base = declarative_base()
+class Base(DeclarativeBase, MappedAsDataclass):
+    pass
 
 def init_app(app):
     @app.teardown_appcontext

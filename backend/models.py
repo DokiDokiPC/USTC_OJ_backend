@@ -1,4 +1,3 @@
-from dataclasses import dataclass
 from datetime import datetime
 
 from sqlalchemy import VARCHAR, Unicode, UnicodeText, ForeignKey
@@ -14,51 +13,46 @@ class ProblemLevel:
     Hard = 'Hard'
 
 
-@dataclass()
 class Problem(Base):
     __tablename__ = 'problem'
-    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    name: Mapped[str] = mapped_column(Unicode(80), nullable=False)
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True, default=None)
+    name: Mapped[str] = mapped_column(Unicode(80), nullable=False, default=None)
     level: Mapped[str] = mapped_column(VARCHAR(20), nullable=False,  default=ProblemLevel.Easy)
     ac_num: Mapped[int] = mapped_column(nullable=False,  default=0)
     submit_num: Mapped[int] = mapped_column(nullable=False,  default=0)
     # 一段markdown文本, 包含题目描述, 输入输出格式, 样例等内容
-    description: Mapped[str] = mapped_column(UnicodeText, nullable=False)
+    description: Mapped[str] = mapped_column(UnicodeText, nullable=False, default=None)
     # 时间空间限制
     time_limit: Mapped[int] = mapped_column(nullable=False,  default=1000)  # ms
     memory_limit: Mapped[int] = mapped_column(nullable=False,  default=10240)  # KB
 
 
-@dataclass()
 class Contest(Base):
     __tablename__ = 'contest'
-    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    name: Mapped[str] = mapped_column(Unicode(80), nullable=False)
-    start_time: Mapped[datetime] = mapped_column(nullable=False)
-    end_time: Mapped[datetime] = mapped_column(nullable=False)
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True, default=None)
+    name: Mapped[str] = mapped_column(Unicode(80), nullable=False, default=None)
+    start_time: Mapped[datetime] = mapped_column(nullable=False, default=None)
+    end_time: Mapped[datetime] = mapped_column(nullable=False, default=None)
 
 
-@dataclass()
 class ContestProblem(Base):
     __tablename__ = 'contest_problem'
-    contest_id: Mapped[int] = mapped_column(ForeignKey(Contest.id), primary_key=True)
-    problem_id: Mapped[int] = mapped_column(ForeignKey(Problem.id), primary_key=True)
+    contest_id: Mapped[int] = mapped_column(ForeignKey(Contest.id), primary_key=True, default=None)
+    problem_id: Mapped[int] = mapped_column(ForeignKey(Problem.id), primary_key=True, default=None)
 
 
-@dataclass()
 class User(Base):
     __tablename__ = 'user'
-    username: Mapped[str] = mapped_column(VARCHAR(Config.USERNAME_MAX_LEN), primary_key=True)
-    password: Mapped[str] = mapped_column(VARCHAR(Config.PWD_HASHED_LEN), nullable=False)
-    email: Mapped[str] = mapped_column(VARCHAR(Config.EMAIL_MAX_LEN), nullable=False, unique=True)
+    username: Mapped[str] = mapped_column(VARCHAR(Config.USERNAME_MAX_LEN), primary_key=True, default=None)
+    password: Mapped[str] = mapped_column(VARCHAR(Config.PWD_HASHED_LEN), nullable=False, default=None)
+    email: Mapped[str] = mapped_column(VARCHAR(Config.EMAIL_MAX_LEN), nullable=False, unique=True, default=None)
     is_admin: Mapped[bool] = mapped_column(nullable=False,  default=False)
 
 
-@dataclass()
 class UserProblemPassed(Base):
     __tablename__ = 'user_problem_passed'
-    username: Mapped[str] = mapped_column(ForeignKey(User.username), primary_key=True)
-    problem_id: Mapped[int] = mapped_column(ForeignKey(Problem.id), primary_key=True)
+    username: Mapped[str] = mapped_column(ForeignKey(User.username), primary_key=True, default=None)
+    problem_id: Mapped[int] = mapped_column(ForeignKey(Problem.id), primary_key=True, default=None)
 
 
 class SubmissionStatus:
@@ -78,13 +72,12 @@ class SubmissionCompiler:
     GPP = 'GPP'
 
 
-@dataclass()
 class Submission(Base):
     __tablename__ = 'submission'
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     submission_time: Mapped[datetime] = mapped_column(nullable=False,  default=datetime.now)
-    username: Mapped[str] = mapped_column(ForeignKey(User.username), nullable=False)
-    problem_id: Mapped[int] = mapped_column(ForeignKey(Problem.id), nullable=False)
+    username: Mapped[str] = mapped_column(ForeignKey(User.username), nullable=False, default=None)
+    problem_id: Mapped[int] = mapped_column(ForeignKey(Problem.id), nullable=False, default=None)
     compiler: Mapped[str] = mapped_column(
         VARCHAR(80), nullable=False, default=SubmissionCompiler.GCC)  # 隐含了语言信息, 可用编译器在Compilers设置
     status: Mapped[str] = mapped_column(VARCHAR(80), nullable=False,  default=SubmissionStatus.Waiting)

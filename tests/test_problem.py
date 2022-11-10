@@ -9,8 +9,6 @@ prefix = '/problems/'
 data = {
     'name': '测试问题',
     'level': ProblemLevel.Easy,
-    'ac_num': 2,
-    'submit_num': 10,
     'description': '测试简介',
     'time_limit': 1000,
     'memory_limit': 10,
@@ -21,7 +19,7 @@ def test_create(client: FlaskClient, login_client: FlaskClient, admin_client: Fl
     assert login_client.post(prefix, data=data).status_code == HTTPStatus.UNAUTHORIZED
     assert admin_client.post(prefix, data=data).status_code == HTTPStatus.CREATED
 
-def test_get_list(client: FlaskClient, login_client: FlaskClient, admin_client: FlaskClient):
+def test_get_list(client: FlaskClient, login_client: FlaskClient):
     assert client.get(prefix).status_code == HTTPStatus.UNAUTHORIZED
     resp = login_client.get(prefix)
     assert resp.status_code == HTTPStatus.OK
