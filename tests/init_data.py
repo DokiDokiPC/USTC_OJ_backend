@@ -28,7 +28,7 @@ stateses = gen_list_from_class(SubmissionStatus)
 
 # 随机生成问题
 problems = []
-for i in range(N):
+for i in range(1, N + 1):
     submit_num = randint(0, 1000)
     ac_num = randint(0, submit_num)
     problems.append(Problem(
