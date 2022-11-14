@@ -75,7 +75,8 @@ class SubmissionCompiler:
 class Submission(Base):
     __tablename__ = 'submission'
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True, default=None)
-    submission_time: Mapped[datetime] = mapped_column(nullable=False,  default=datetime.now)
+    # 数据库, 后端都用UTC, 只有前端显示的时候才考虑时区
+    submission_time: Mapped[datetime] = mapped_column(nullable=False, default=None, insert_default=datetime.utcnow)
     username: Mapped[str] = mapped_column(ForeignKey(User.username), nullable=False, default=None)
     problem_id: Mapped[int] = mapped_column(ForeignKey(Problem.id), nullable=False, default=None)
     compiler: Mapped[str] = mapped_column(

@@ -17,19 +17,22 @@ problem_bp = Blueprint('problem', __name__, url_prefix='/problems')
 # 获取问题列表
 @problem_bp.route('/', methods=['GET'])
 def get_problems():
+    # 获取url参数
+    name = request.args.get('name', None, type=str)
     offset = request.args.get('offset', 0, type=int)
-    name = request.args.get('name', None)
-    stmt = (
-        select(Problem)
-        .options(load_only(Problem.id, Problem.name, Problem.level, Problem.ac_num, Problem.submit_num))
-        .offset(offset)
-        .limit(Config.QUERY_LIMIT)
-    )
+
+    # 构造problem查询和总数查询语句
+    stmt = select(Problem).options(load_only(
+        Problem.id, Problem.name, Problem.level, Problem.ac_num, Problem.submit_num)
+    ).offset(offset).limit(Config.QUERY_LIMIT).order_by()
+    count_stmt = select(func.count('*')).select_from(Problem)
     if name is not None:
+        name = func.binary(name)  # 使name区分大小写
         stmt = stmt.filter(Problem.name.contains(name))
+        count_stmt = count_stmt.filter(Problem.name.contains(name))
     return {
         'problems': Session.scalars(stmt).all(),
-        'total_count': Session.scalar(select(func.count('*')).select_from(Problem)),
+        'total_count': Session.scalar(count_stmt),
         'page_size': Config.QUERY_LIMIT
     }
 

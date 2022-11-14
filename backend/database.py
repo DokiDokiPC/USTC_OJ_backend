@@ -3,7 +3,8 @@ from sqlalchemy.orm import sessionmaker, scoped_session, DeclarativeBase, Mapped
 
 from backend.config import Config
 
-engine = create_engine(Config.SQLALCHEMY_DATABASE_URI)
+# echo设为True可以 debug sqlalechemy
+engine = create_engine(Config.SQLALCHEMY_DATABASE_URI, echo=False)
 
 try:
     from greenlet import getcurrent as _get_ident

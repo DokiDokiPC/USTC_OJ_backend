@@ -20,14 +20,25 @@ submission_bp = Blueprint('submissions', __name__, url_prefix='/submissions')
 
 @submission_bp.route('/', methods=['GET'])
 def get_submissions():
+    # 获取url参数
+    username = request.args.get('username', None, type=str)
     offset = request.args.get('offset', 0, type=int)
+
+    # 构造submission的查询语句, 以及统计数量的语句
     stmt = select(Submission).options(load_only(
         Submission.id, Submission.submission_time, Submission.username, Submission.problem_id, Submission.compiler,
         Submission.status, Submission.time_cost, Submission.memory_cost
-    )).offset(offset).limit(Config.QUERY_LIMIT)
+    )).offset(offset).limit(Config.QUERY_LIMIT).order_by(Submission.id.desc())  # submission逆序
+    count_stmt = select(func.count('*')).select_from(Submission)
+    if username is not None:
+        username = func.binary(username)  # 使username区分大小写
+        stmt = stmt.filter(Submission.username == username)
+        count_stmt = count_stmt.filter(Submission.username == username)
+
+    # 执行查询并返回
     return {
         'submissions': Session.scalars(stmt).all(),
-        'total_count': Session.scalar(select(func.count('*')).select_from(Submission)),
+        'total_count': Session.scalar(count_stmt),
         'page_size': Config.QUERY_LIMIT
     }
 
@@ -75,4 +86,4 @@ def submit_solution():
         )
     )
 
-    return ''
+    return '', HTTPStatus.OK
