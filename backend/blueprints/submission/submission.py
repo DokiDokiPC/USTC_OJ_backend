@@ -3,12 +3,11 @@ from http import HTTPStatus
 
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy import select, func
-from sqlalchemy.orm import load_only
 from flask import Blueprint, request
 from flask_jwt_extended import jwt_required, get_jwt_identity
 import pika
 
-from backend.database import Session
+from backend.database import Session, get_dicts
 from backend.extensions import mq
 from backend.models import Submission, Problem, SubmissionStatus, SubmissionCompiler
 from backend.forms import SubmissionForm
@@ -25,10 +24,8 @@ def get_submissions():
     offset = request.args.get('offset', 0, type=int)
 
     # 构造submission的查询语句, 以及统计数量的语句
-    stmt = select(Submission).options(load_only(
-        Submission.id, Submission.submission_time, Submission.username, Submission.problem_id, Submission.compiler,
-        Submission.status, Submission.time_cost, Submission.memory_cost
-    )).offset(offset).limit(Config.QUERY_LIMIT).order_by(Submission.id.desc())  # submission逆序
+    stmt = (select(Submission).offset(offset).limit(Config.QUERY_LIMIT)
+            .order_by(Submission.id.desc()))  # submission逆序
     count_stmt = select(func.count('*')).select_from(Submission)
     if username is not None:
         username = func.binary(username)  # 使username区分大小写
@@ -37,7 +34,7 @@ def get_submissions():
 
     # 执行查询并返回
     return {
-        'submissions': Session.scalars(stmt).all(),
+        'submissions': get_dicts(stmt),
         'total_count': Session.scalar(count_stmt),
         'page_size': Config.QUERY_LIMIT
     }

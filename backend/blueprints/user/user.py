@@ -1,17 +1,38 @@
 from http import HTTPStatus
 
-from flask import Blueprint, jsonify, make_response
+from flask import Blueprint, jsonify, make_response, request
 from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy import select, func
 from flask_jwt_extended import jwt_required, get_current_user,\
     create_access_token, set_access_cookies, unset_access_cookies
 from argon2 import PasswordHasher
 
 from backend.models import User
-from backend.database import Session
+from backend.database import Session, get_dicts
 from backend.forms import RegisterForm, UserUpdateForm
+from backend.config import Config
 
 user_bp = Blueprint('user', __name__, url_prefix='/users')
 ph = PasswordHasher()
+
+
+# 获取用户列表
+@user_bp.route('/', methods=['GET'])
+def get_user_list():
+    # 获取url参数
+    offset = request.args.get('offset', 0, type=int)
+
+    # 构造查询语句
+    stmt = (select(User.username, User.passed_problem_num).offset(offset)
+            .limit(Config.QUERY_LIMIT).order_by(User.passed_problem_num.desc()))
+    count_stmt = select(func.count('*')).select_from(User)
+
+    # 执行查询并返回
+    return {
+        'user_stats': get_dicts(stmt),
+        'total_count': Session.scalar(count_stmt),
+        'page_size': Config.QUERY_LIMIT
+    }
 
 
 # 获取当前用户信息

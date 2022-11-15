@@ -1,5 +1,7 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session, DeclarativeBase, MappedAsDataclass
+from sqlalchemy.sql import Executable
+from sqlalchemy.engine.result import ChunkedIteratorResult
 
 from backend.config import Config
 
@@ -20,3 +22,9 @@ def init_app(app):
     @app.teardown_appcontext
     def remove_session(_exception):
         Session.remove()
+
+def get_dicts(stmt: Executable):
+    res = Session.execute(stmt)
+    assert isinstance(res, ChunkedIteratorResult), 'type of r is not ChunkedIteratorResult'
+    rows = res.raw.all()
+    return [dict(row._mapping) for row in rows]  # noqa
