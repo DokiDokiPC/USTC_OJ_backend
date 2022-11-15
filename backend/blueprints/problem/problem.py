@@ -31,7 +31,7 @@ def get_problems():
         count_stmt = count_stmt.filter(Problem.name.contains(name))
     return {
         'problems': get_dicts(stmt),
-        'total_count': Session.scalar(count_stmt),
+        'total': Session.scalar(count_stmt),
         'page_size': Config.QUERY_LIMIT
     }
 

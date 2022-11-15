@@ -25,4 +25,4 @@ def test_get_list(client: FlaskClient, login_client: FlaskClient):
     assert resp.status_code == HTTPStatus.OK
     data = resp.get_json()
     assert data['page_size'] == Config.QUERY_LIMIT
-    assert len(data['problems']) == min(Config.QUERY_LIMIT, data['total_count'])
+    assert len(data['problems']) == min(Config.QUERY_LIMIT, data['total'])

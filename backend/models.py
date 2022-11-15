@@ -46,7 +46,7 @@ class User(Base):
     username: Mapped[str] = mapped_column(VARCHAR(Config.USERNAME_MAX_LEN), primary_key=True, default=None)
     password: Mapped[str] = mapped_column(VARCHAR(Config.PWD_HASHED_LEN), nullable=False, default=None)
     email: Mapped[str] = mapped_column(VARCHAR(Config.EMAIL_MAX_LEN), nullable=False, unique=True, default=None)
-    passed_problem_num: Mapped[int] = mapped_column(nullable=False, default=0)
+    solved: Mapped[int] = mapped_column(nullable=False, default=0)
     is_admin: Mapped[bool] = mapped_column(nullable=False,  default=False)
 
 

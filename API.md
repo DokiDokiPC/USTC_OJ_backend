@@ -149,7 +149,7 @@ GET /submissions?offset=s
 ##### success
 
 ```
-{'submissions': [s1, s2...], 'total_count': n}
+{'submissions': [s1, s2...], 'total': n}
 ```
 
 ### POST /submissions

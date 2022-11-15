@@ -23,14 +23,14 @@ def get_user_list():
     offset = request.args.get('offset', 0, type=int)
 
     # 构造查询语句
-    stmt = (select(User.username, User.passed_problem_num).offset(offset)
-            .limit(Config.QUERY_LIMIT).order_by(User.passed_problem_num.desc()))
+    stmt = (select(User.username, User.solved).offset(offset)
+            .limit(Config.QUERY_LIMIT).order_by(User.solved.desc()))
     count_stmt = select(func.count('*')).select_from(User)
 
     # 执行查询并返回
     return {
-        'user_stats': get_dicts(stmt),
-        'total_count': Session.scalar(count_stmt),
+        'users': get_dicts(stmt),
+        'total': Session.scalar(count_stmt),
         'page_size': Config.QUERY_LIMIT
     }
 

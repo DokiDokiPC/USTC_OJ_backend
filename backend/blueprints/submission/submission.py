@@ -35,7 +35,7 @@ def get_submissions():
     # 执行查询并返回
     return {
         'submissions': get_dicts(stmt),
-        'total_count': Session.scalar(count_stmt),
+        'total': Session.scalar(count_stmt),
         'page_size': Config.QUERY_LIMIT
     }
 
