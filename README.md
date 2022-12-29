@@ -1,5 +1,9 @@
 # USTC_OJ_backend
 
+### 依赖
+* MySQL或 MariaDB
+* RabbitMQ
+
 ### 安装
 
 ```bash
